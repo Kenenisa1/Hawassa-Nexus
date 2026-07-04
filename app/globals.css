@@ -25,6 +25,11 @@
   /* 3. Register Utility Classes */
   --animate-aurora: aurora 25s ease-in-out infinite;
   --animate-float: float 6s ease-in-out infinite;
+
+  /* 4. Font Families */
+  --font-sans: var(--font-roboto-slab), serif;
+  --font-display: var(--font-bungee), sans-serif;
+  --font-mono: var(--font-mono), monospace;
 }
 
 :root {
@@ -38,6 +43,7 @@
 }
 
 body {
+  font-family: var(--font-roboto-slab), serif;
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
   /* Premium Mesh Gradient for Hawassa Pulse */

@@ -1,17 +1,22 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
+  serverExternalPackages: ["mongoose", "mongodb", "bcryptjs"],
   experimental: {
-    turbopackFileSystemCacheForDev: false 
+    turbopackFileSystemCacheForDev: false,
+    optimizePackageImports: ["react-icons", "framer-motion", "lucide-react"]
   },
   images: {
-    // Keeping Cloudinary for when you eventually allow real photo uploads
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
         pathname: '/**', 
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
       }
     ],
   },
