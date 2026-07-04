@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * HAWASSA PULSE - SERVER ACTIONS ENGINE
+ * HAWASSA NEXUS - SERVER ACTIONS ENGINE
  * ------------------------------------------------
  * Core logic for database operations including Event 
  * Orchestration, Synchronization, and State Management.

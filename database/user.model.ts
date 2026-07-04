@@ -71,7 +71,7 @@ const userSchema = new Schema<IUser>({
     default: Date.now 
   },
 }, {
-  timestamps: true // Automatically creates 'createdAt' and 'updatedAt'
+  timestamps: true
 });
 
 const User = models.User || model<IUser>("User", userSchema);
