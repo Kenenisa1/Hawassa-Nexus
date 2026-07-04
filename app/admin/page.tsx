@@ -1,9 +1,9 @@
 'use client';
 
 /**
- * HAWASSA PULSE - COMMAND CENTER (ADMIN DASHBOARD)
+ * HAWASSA NEXUS - COMMAND CENTER (ADMIN DASHBOARD)
  * ------------------------------------------------
- * Core Management Interface for the Hawassa Pulse Ecosystem.
+ * Core Management Interface for the Hawassa Nexus Ecosystem.
  * Handles real-time synchronization of event data, API testing, 
  * and system health monitoring.
  * * Architecture: Next.js Client Component with Mongoose Integration.
@@ -17,14 +17,14 @@ import {
 } from "react-icons/md";
 import AdminTable from "@/components/admin/AdminTable";
 import { getAllEvents } from "@/lib/actions/event.actions";
-import { IEvent } from "@/database/event.model";
+import type { IEvent } from "@/database/event.model";
 import Link from "next/link";
+import Image from "next/image";
 
 const AdminDashboard = () => {
   // --- SYSTEM STATE ENGINE ---
   const [events, setEvents] = useState<IEvent[]>([]);
   const [testResponse, setTestResponse] = useState<any>(null);
-  const [isTesting, setIsTesting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   /**
@@ -58,44 +58,6 @@ const AdminDashboard = () => {
     return () => window.removeEventListener('focus', fetchData);
   }, [fetchData]);
 
-  /**
-   * API PIPELINE TESTER (POST SIMULATION)
-   * Validates endpoint integrity for Hawassa Pulse REST operations.
-   */
-  const runApiTest = async () => {
-    setIsTesting(true);
-    try {
-      const res = await fetch('/api/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: "System Test Pulse",
-          category: "Technology",
-          hub: "Main Hub",
-          venue: "Virtual Space",
-          location: "Hawassa",
-          date: "2026-12-31",
-          time: "00:00",
-          image: "https://res.cloudinary.com/demo/image/upload/sample.jpg",
-          description: { en: "Automated system test" },
-          overview: { en: "Verification of API pipeline" },
-          audience: "System",
-          organizer: "AdminPulse",
-          tags: ["test", "api"],
-          agenda: ["Init", "Sync", "Verify"]
-        })
-      });
-      const data = await res.json();
-      setTestResponse(data);
-      // If test succeeds, refresh the table to show the test item
-      if (data.success) fetchData();
-    } catch (err) {
-      setTestResponse({ success: false, message: "API Route Not Found" });
-    } finally {
-      setIsTesting(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-black text-zinc-400 selection:bg-sky-500/30">
       <div className="flex pt-20 lg:pt-28">
@@ -103,7 +65,9 @@ const AdminDashboard = () => {
         {/* --- GLOBAL NAVIGATION SIDEBAR --- */}
         <aside className="hidden lg:flex w-72 flex-col fixed left-8 top-32 bottom-8 rounded-[3rem] bg-slate-950/40 border border-white/5 p-8 backdrop-blur-2xl z-20">
           <div className="mb-12 flex items-center gap-3 px-2">
-            <div className="w-1.5 h-8 bg-sky-500 rounded-full shadow-[0_0_15px_rgba(14,165,233,0.5)]" />
+            <div className="relative h-12 w-12 transition-transform duration-300 hover:scale-105">
+              <Image src="/logo.png" alt="Admin Logo" fill className="object-contain" />
+            </div>
             <span className="font-black text-xl text-white uppercase italic tracking-tighter">
               Admin<span className="text-sky-500">Pulse</span>
             </span>
@@ -139,13 +103,6 @@ const AdminDashboard = () => {
             </div>
 
             <div className="flex items-center gap-3">
-               <button 
-                 onClick={runApiTest}
-                 className={`flex items-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase transition-all border ${isTesting ? 'bg-zinc-900 border-zinc-800' : 'bg-white/5 border-white/10 hover:border-sky-500 text-zinc-400 hover:text-white'}`}
-               >
-                 <MdBolt size={18} className={isTesting ? "animate-spin text-sky-500" : ""} />
-                 {isTesting ? "Testing POST..." : "Test API POST"}
-               </button>
 
               <Link 
                 href="/admin/create" 
@@ -159,7 +116,7 @@ const AdminDashboard = () => {
               <button 
                 onClick={fetchData}
                 disabled={isLoading}
-                className="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/5 border border-white/10 text-zinc-400 hover:text-sky-500 hover:border-sky-500 transition-all active:rotate-180 duration-500 disabled:opacity-50"
+                className="flex cursor-pointer items-center justify-center w-14 h-14 rounded-2xl bg-white/5 border border-white/10 text-zinc-400 hover:text-sky-500 hover:border-sky-500 transition-all active:rotate-180 duration-500 disabled:opacity-50"
                 title="Synchronize Grid"
               >
                 <MdBolt size={24} className={isLoading ? "animate-spin text-sky-500" : ""} />

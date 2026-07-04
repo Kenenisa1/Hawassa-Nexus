@@ -1,121 +1,194 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
-import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaUsers, FaArrowLeft, FaShareAlt } from "react-icons/fa";
+import { 
+  FaCalendarAlt, 
+  FaClock, 
+  FaMapMarkerAlt, 
+  FaArrowLeft, 
+  FaShareAlt, 
+  FaTicketAlt,
+  FaLayerGroup
+} from "react-icons/fa";
 import { HiOutlineBadgeCheck, HiOutlineInformationCircle } from "react-icons/hi";
 import Link from "next/link";
+import { connection } from "next/server";
+
 import BookEvent from "@/components/BookEvent";
-import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
+import SaveButton from "@/components/SaveButton";
 import EventCard from "@/components/EventCard";
+import LText from "@/components/LanguageFriendlyText";
+
+import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
+import connectToDatabase from "@/lib/mongodb";
+import User from "@/database/user.model";
 import { IEvent } from "@/database/event.model";
+import { cookies } from "next/headers"; // Used to get your custom session/user ID
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
-// 1. Metadata fix: Ensure we point to .en to avoid object errors during build
+const ui = {
+  verified: { en: "Verified Pulse Event", am: "የተረጋገጠ ኩነት" },
+  joinGrid: { en: "Join the Grid", am: "ይመዝገቡ" },
+  insight: { en: "The Insight", am: "ዝርዝር መረጃ" },
+  archive: { en: "Visual Archive", am: "ፎቶዎች" },
+  sequence: { en: "Pulse Sequence", am: "የኩነቱ ቅደም ተከተል" },
+  extend: { en: "Extend the Pulse", am: "ተቀራራቢ ኩነቶች" },
+  related: { en: "Related Operations", am: "ተያያዥ መርሃ ግብሮች" },
+  viewAll: { en: "View All Events", am: "ሁሉንም ይመልከቱ" },
+  host: { en: "Host", am: "አዘጋጅ" },
+  target: { en: "Target", am: "ለማን" },
+  location: { en: "Location", am: "ቦታ" },
+  tags: { en: "Operation Tags", am: "መለያዎች" },
+};
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const res = await fetch(`${BASE_URL}/api/events/${slug}`);
   const data = await res.json();
-  return { title: `${data.event?.title?.en || 'Event'} | Hawassa Pulse` };
+  const titleString = typeof data.event?.title === 'object' ? data.event.title.en : data.event?.title || 'Event';
+  return { title: `${titleString} | Hawassa Nexus` };
 }
 
 const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>; }) => {
+  await connection();
   const { slug } = await params;
-  const request = await fetch(`${BASE_URL}/api/events/${slug}`, { next: { revalidate: 3600 } });
-  const data = await request.json();
+  
+  // 1. Fetch Auth Session (Custom MERN Logic)
+  const cookieStore = await cookies();
+  const userId = cookieStore.get("userId")?.value; // Or however you store your session ID
 
+  await connectToDatabase();
+  
+  // 2. Fetch Event Data
+  const request = await fetch(`${BASE_URL}/api/events/${slug}`, { 
+    next: { revalidate: 3600 } 
+  });
+  const data = await request.json();
   if (!data.event) return notFound();
 
   const event: IEvent = data.event;
   const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
 
-  // Helper to safely render strings in Server Components 
-  // (Since useLanguage() doesn't work here, we default to 'en' for SSR)
-  const getContent = (field: any) => typeof field === 'object' ? field.en : field;
+  // 3. Fetch User Data for the Save/Like Button
+  let mongoUser = null;
+  let hasSaved = false;
+
+  if (userId) {
+    mongoUser = await User.findById(userId);
+    hasSaved = mongoUser?.saved?.includes(event._id);
+  }
+
+  const sS = (field: any) => typeof field === 'object' ? field.en : (field || "");
 
   return (
-    <div className="min-h-screen bg-[#030014] text-zinc-100 pb-32 selection:bg-sky-500 selection:text-black">
+    <div className="min-h-screen bg-[#000000] text-zinc-100 pb-32 selection:bg-sky-500/30">
       
-      {/* 1. HERO HEADER */}
-      <div className="relative h-[55vh] md:h-[70vh] w-full overflow-hidden">
+      {/* 1. HERO SECTION */}
+      <div className="relative h-[65vh] md:h-[80vh] w-full overflow-hidden">
         <Image
           src={event.image}
-          alt={getContent(event.title)}
+          alt={sS(event.title)}
           fill
-          className="object-cover scale-105 brightness-[0.6]"
+          className="object-cover scale-105 brightness-[0.4] contrast-[1.1]"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#030014] via-[#030014]/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/20 to-transparent" />
         
         <div className="absolute top-24 left-0 w-full px-6 flex justify-between items-center z-20">
-          <Link href="/Event" className="group p-4 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 text-white hover:border-sky-500/50 transition-all">
+          <Link href="/explore" className="group p-4 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 text-white hover:border-sky-500/50 transition-all">
             <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
           </Link>
-          <button className="p-4 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 text-white hover:border-sky-500/50 transition-all">
-            <FaShareAlt />
-          </button>
+          <div className="flex gap-4">
+            {mongoUser && (
+              <SaveButton userId={mongoUser._id.toString()} eventId={event._id.toString()} hasSaved={hasSaved} />
+            )}
+            <button className="p-4 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 text-white hover:text-sky-400 transition-colors">
+              <FaShareAlt />
+            </button>
+          </div>
         </div>
 
         <div className="absolute bottom-12 left-0 w-full px-8 max-w-7xl mx-auto">
-          <div className="space-y-4">
-             <span className="bg-sky-500/10 text-sky-400 border border-sky-500/20 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] backdrop-blur-md">
-               {event.hub || "Central Pulse"}
-             </span>
-             <h1 className="text-4xl md:text-7xl font-black text-white italic uppercase tracking-tighter leading-none">
-               {getContent(event.title)}
+          <div className="space-y-6">
+             <div className="flex flex-wrap gap-3">
+               <span className="bg-sky-500/10 text-sky-400 border border-sky-500/20 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] backdrop-blur-md">
+                 {event.hub}
+               </span>
+               <span className="bg-white/5 text-zinc-300 border border-white/10 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] backdrop-blur-md">
+                 {event.category}
+               </span>
+             </div>
+             
+             <h1 className="text-5xl md:text-8xl font-black text-white italic uppercase tracking-tighter leading-[0.85]">
+               <LText content={event.title} />
              </h1>
-             <p className="hidden md:block text-zinc-400 text-lg font-medium max-w-2xl border-l-2 border-sky-500 pl-6 py-2">
-               {getContent(event.description)}
-             </p>
+             
+             <div className="hidden md:block text-zinc-400 text-xl font-medium max-w-3xl border-l-4 border-sky-500 pl-8 py-2 leading-relaxed">
+               <LText content={event.description} />
+             </div>
           </div>
         </div>
       </div>
 
-      {/* 2. CORE UTILITY GRID */}
-      <main className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 mt-[-40px] relative z-10">
-        <div className="lg:col-span-8 space-y-20">
+      {/* 2. MAIN CONTENT GRID */}
+      <main className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 mt-[-60px] relative z-10">
+        
+        <div className="lg:col-span-8 space-y-24">
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-1 p-1 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-2xl">
+          {/* Key Metrics Bar */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-1 p-1 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-3xl">
             {[
-              { icon: <FaCalendarAlt />, label: "Timeline", value: event.date },
-              { icon: <FaClock />, label: "Beat", value: event.time },
-              { icon: <FaMapMarkerAlt />, label: "Hub", value: getContent(event.location) },
+              { icon: <FaCalendarAlt />, label: {en: "Date", am: "ቀን"}, value: event.date },
+              { icon: <FaClock />, label: {en: "Time", am: "ሰዓት"}, value: event.time },
+              { icon: <FaMapMarkerAlt />, label: {en: "Venue", am: "ቦታ"}, value: event.venue },
+              { 
+                icon: <FaTicketAlt />, 
+                label: {en: "Access", am: "መግቢያ"}, 
+                value: event.price === 0 ? "FREE" : `${event.price} ETB` 
+              },
             ].map((item, i) => (
-              <div key={i} className="flex items-center gap-5 p-6 bg-black/40 rounded-[2rem] border border-white/5">
-                <div className="w-12 h-12 rounded-2xl bg-sky-500/10 flex items-center justify-center text-sky-500 text-xl">{item.icon}</div>
+              <div key={i} className="flex items-center gap-4 p-6 bg-black/60 rounded-[2rem] border border-white/5">
+                <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-500 text-lg">{item.icon}</div>
                 <div>
-                  <p className="text-[10px] uppercase text-zinc-500 font-black tracking-widest">{item.label}</p>
-                  <p className="text-sm font-bold text-white uppercase italic">{item.value}</p>
+                  <p className="text-[9px] uppercase text-zinc-500 font-black tracking-widest leading-none mb-1">
+                    <LText content={item.label} />
+                  </p>
+                  <div className="text-xs font-bold text-white uppercase italic truncate max-w-[110px]">{item.value}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          <section className="space-y-8">
-            <div className="flex items-center gap-4">
-               <div className="h-px flex-1 bg-white/10" />
-               <h2 className="text-2xl font-black text-white uppercase italic flex items-center gap-3">
-                 <HiOutlineInformationCircle className="text-sky-500" /> The Insight
+          {/* Event Overview Section */}
+          <section className="space-y-8 px-4">
+            <div className="flex items-center gap-6">
+               <h2 className="text-3xl font-black text-white uppercase italic flex items-center gap-4 shrink-0">
+                 <HiOutlineInformationCircle className="text-sky-500" /> <LText content={ui.insight} />
                </h2>
-               <div className="h-px flex-1 bg-white/10" />
+               <div className="h-px w-full bg-gradient-to-r from-white/10 to-transparent" />
             </div>
-            <p className="text-zinc-400 leading-relaxed text-lg font-medium whitespace-pre-line px-4">
-              {getContent(event.overview)}
-            </p>
+            <div className="text-zinc-400 leading-relaxed text-lg font-medium">
+              <LText content={event.overview} />
+            </div>
           </section>
 
-          {/* Event Flow */}
-          <section className="relative overflow-hidden bg-slate-950/40 border border-white/5 rounded-[3rem] p-10">
-            <h2 className="text-2xl font-black text-white uppercase italic mb-12 tracking-widest">Pulse Sequence</h2>
-            <div className="space-y-10 relative">
-              <div className="absolute left-3 top-2 bottom-2 w-px bg-gradient-to-b from-sky-500/50 via-sky-500/20 to-transparent" />
+          {/* ... (Visual Gallery & Pulse Sequence remains the same) ... */}
+
+          {/* 4. PULSE SEQUENCE (Agenda) */}
+          <section className="relative overflow-hidden bg-white/[0.02] border border-white/5 rounded-[3.5rem] p-12">
+            <h2 className="text-2xl font-black text-white uppercase italic mb-12 tracking-widest flex items-center gap-4">
+              <span className="w-8 h-[2px] bg-sky-500" /> <LText content={ui.sequence} />
+            </h2>
+            <div className="space-y-12 relative">
+              <div className="absolute left-[11px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-sky-500/50 via-sky-500/10 to-transparent" />
               {event.agenda.map((item, index) => (
-                <div key={index} className="flex gap-10 items-start relative group">
-                  <div className="w-6 h-6 rounded-full bg-black border-2 border-sky-500 z-10 group-hover:scale-125 transition-transform" />
-                  <div className="space-y-1">
-                    <span className="text-sky-500/60 font-black text-[10px] uppercase tracking-widest">Phase 0{index + 1}</span>
-                    <p className="text-zinc-300 font-bold text-xl leading-snug group-hover:text-white transition-colors uppercase italic tracking-tighter">
-                      {getContent(item)}
-                    </p>
+                <div key={index} className="flex gap-12 items-start relative group">
+                  <div className="w-6 h-6 rounded-full bg-black border-2 border-sky-500 z-10 shadow-[0_0_15px_rgba(14,165,233,0.4)] group-hover:scale-125 transition-all" />
+                  <div className="space-y-2">
+                    <span className="text-sky-500/60 font-black text-[10px] uppercase tracking-[0.3em]">Phase 0{index + 1}</span>
+                    <div className="text-zinc-200 font-bold text-2xl leading-tight group-hover:text-white transition-colors uppercase italic">
+                      <LText content={item} />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -123,40 +196,63 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>;
           </section>
         </div>
 
-        {/* SIDEBAR */}
+        {/* 5. SIDEBAR / BOOKING */}
         <aside className="lg:col-span-4 hidden lg:block">
-          <div className="sticky top-32 space-y-6">
-            <div className="bg-zinc-950/80 border border-white/10 rounded-[3rem] p-10 backdrop-blur-3xl shadow-[0_30px_100px_rgba(0,0,0,1)]">
-              <div className="flex items-center gap-2 text-sky-400 mb-8 bg-sky-500/5 w-fit px-4 py-1.5 rounded-full border border-sky-500/10">
-                <HiOutlineBadgeCheck className="text-lg" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Verified Hub Event</span>
+          <div className="sticky top-32 space-y-8">
+            <div className="bg-zinc-950/50 border border-white/10 rounded-[3rem] p-10 backdrop-blur-3xl shadow-2xl">
+              <div className="flex items-center gap-2 text-sky-400 mb-8 bg-sky-500/5 w-fit px-4 py-2 rounded-2xl border border-sky-500/10">
+                <HiOutlineBadgeCheck className="text-xl" />
+                <span className="text-[10px] font-black uppercase tracking-widest"><LText content={ui.verified} /></span>
               </div>
-              <h2 className="text-4xl font-black text-white uppercase italic mb-2 tracking-tighter">Join the Grid</h2>
-              <BookEvent eventId={event._id.toString()} slug={event.slug} />
+              
+              <h2 className="text-4xl font-black text-white uppercase italic mb-4 leading-none"><LText content={ui.joinGrid} /></h2>
+              <div className="space-y-2 mb-10">
+                <p className="text-zinc-500 text-sm font-medium leading-relaxed">
+                  <LText content={ui.host} />: <span className="text-zinc-200">{event.organizer}</span>
+                </p>
+                <p className="text-zinc-500 text-sm font-medium leading-relaxed">
+                  <LText content={ui.target} />: <span className="text-zinc-200">{event.audience}</span>
+                </p>
+                <p className="text-zinc-500 text-sm font-medium leading-relaxed uppercase tracking-tighter">
+                  <LText content={ui.location} />: <span className="text-sky-400">{event.location}</span>
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                {/* Standardized BookEvent */}
+                <BookEvent eventId={event._id.toString()} slug={event.slug} />
+                
+                <div className="pt-6 border-t border-white/5">
+                   <div className="flex items-center gap-2 text-zinc-500 mb-4">
+                     <FaLayerGroup className="text-xs" />
+                     <span className="text-[10px] font-black uppercase tracking-widest"><LText content={ui.tags} /></span>
+                   </div>
+                   <div className="flex flex-wrap gap-2">
+                     {event.tags.map(tag => (
+                       <span key={tag} className="bg-white/5 px-3 py-1 rounded-lg text-[9px] text-zinc-400 uppercase font-bold border border-white/5">#{tag}</span>
+                     ))}
+                   </div>
+                </div>
+              </div>
             </div>
           </div>
         </aside>
       </main>
 
-      {/* MOBILE BOTTOM BAR */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md bg-zinc-950/90 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-4 lg:hidden z-50 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
-        <div className="flex items-center justify-between gap-4">
-          <div className="pl-4">
-            <p className="text-[9px] uppercase font-black text-zinc-500 tracking-widest">Entry Fee</p>
-            <p className="text-white font-black italic uppercase text-lg leading-tight">Secure Pass</p>
-          </div>
-          <div className="w-1/2">
-             <BookEvent eventId={event._id.toString()} slug={event.slug} />
-          </div>
-        </div>
-      </div>
-
-      {/* RECOMMENDATIONS */}
+      {/* 6. RECOMMENDATIONS */}
       <section className="max-w-7xl mx-auto px-6 mt-40">
-        <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-12">Extend the Pulse</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="flex items-end justify-between mb-16 px-4">
+          <div>
+            <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter"><LText content={ui.extend} /></h2>
+            <p className="text-sky-500/60 text-xs font-black uppercase tracking-[0.3em] mt-2"><LText content={ui.related} /></p>
+          </div>
+          <Link href="/Event" className="text-zinc-500 hover:text-white text-[10px] font-black uppercase tracking-widest transition-all">
+            <LText content={ui.viewAll} />
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {similarEvents.slice(0, 3).map((e: IEvent) => (
-            <EventCard key={e.slug} {...e} title={e.title} location={e.location} />
+            <EventCard key={e.slug} {...e} />
           ))}
         </div>
       </section>

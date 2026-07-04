@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bungee, Roboto_Slab, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import ConditionalFooter from "@/components/ConditionalFooter";
@@ -10,15 +10,28 @@ import { Toaster } from "sonner";
 import { LanguageProvider } from "@/context/LanguageContext";
 import AuthProvider from "@/context/AuthProvider";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const bungee = Bungee({
+  weight: "400",
+  variable: "--font-bungee",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const robotoSlab = Roboto_Slab({
+  variable: "--font-roboto-slab",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Hawassa Pulse | Event Management",
-  description: "Next.js high-end event platform",
+  title: "Hawassa Nexus | City Events & Community Hub",
+  description: "Hawassa Nexus — the central platform connecting Hawassa's community with city events, hubs, and people.",
 };
 
 export default function RootLayout({
@@ -29,7 +42,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${robotoSlab.variable} ${bungee.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
