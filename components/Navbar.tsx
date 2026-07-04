@@ -11,19 +11,24 @@ import {
   HiX,
   HiChevronDown,
   HiLogout,
-  HiUserCircle,
   HiShieldCheck,
 } from "react-icons/hi";
 import Image from "next/image";
 
+/**
+ * Navigation links with English, Amharic, and Sidaamu Afo translations.
+ */
 const navLinks = [
-  { name: { en: "Home", am: "መነሻ" }, href: "/" },
-  { name: { en: "Explore", am: "ኩነቶች" }, href: "/Event" },
-  { name: { en: "City Hubs", am: "ማዕከላት" }, href: "/hubs" },
-  { name: { en: "Vision", am: "ራዕይ" }, href: "/about" },
-  { name: { en: "Support", am: "እገዛ" }, href: "/contact" },
+  { name: { en: "Home", am: "መነሻ", si: "Hagarra" }, href: "/" },
+  { name: { en: "Explore", am: "ኩነቶች", si: "Woyitoota" }, href: "/explore" },
+  { name: { en: "City Hubs", am: "ማዕከላት", si: "Gidduubba" }, href: "/hubs" },
+  { name: { en: "Vision", am: "ራዕይ", si: "Illacha" }, href: "/about" },
+  { name: { en: "Support", am: "እገዛ", si: "Irko" }, href: "/contact" },
 ];
 
+/**
+ * Supported language configurations.
+ */
 const languages = [
   { code: "en", label: "English" },
   { code: "am", label: "አማርኛ" },
@@ -45,9 +50,12 @@ const Navbar = () => {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { language, setLanguage } = useLanguage();
 
-  const isAmharic = language === "am" || language === "si";
-  const getFontSize = (baseSize: string, amharicSize: string) =>
-    isAmharic ? amharicSize : baseSize;
+  /**
+   * Font size adjustment for Ge'ez or longer Sidaamu scripts
+   */
+  const isNonEnglish = language === "am" || language === "si";
+  const getFontSize = (baseSize: string, largeSize: string) =>
+    isNonEnglish ? largeSize : baseSize;
 
   const currentLangLabel =
     languages.find((l) => l.code === language)?.label || "English";
@@ -81,17 +89,27 @@ const Navbar = () => {
                 : "bg-white/[0.03] backdrop-blur-md rounded-2xl md:rounded-[28px]"
             }`}
           >
-            {/* Logo */}
-            <Link href="/" className="flex flex-col group">
-              <span className="font-black text-base md:text-xl tracking-tighter text-white uppercase italic leading-none">
-                Hawassa<span className="text-sky-500 group-hover:text-white transition-colors">Pulse</span>
-              </span>
-              <span className={`${getFontSize("text-[8px]", "text-[10px]")} text-zinc-500 font-bold tracking-widest uppercase mt-1`}>
-                <LText content={{ en: "City Events", am: "የከተማ ኩነቶች" }} />
-              </span>
+            {/* Branding */}
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="relative h-16 w-16 md:h-20 md:w-20 transition-transform duration-300 group-hover:scale-105">
+                <Image
+                  src="/logo.png"
+                  alt="Hawassa Nexus Logo"
+                  height={150}
+                  width={150}
+                />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-display text-sm md:text-lg tracking-tight text-white uppercase italic leading-none">
+                  Hawassa<span className="text-sky-500 group-hover:text-white transition-colors">Nexus</span>
+                </span>
+                <span className={`${getFontSize("text-[7px]", "text-[8px]")} text-zinc-500 font-bold tracking-widest uppercase mt-1`}>
+                  <LText content={{ en: "City Events", am: "የከተማ ኩነቶች", si: "Qucha Woyitoota" }} />
+                </span>
+              </div>
             </Link>
 
-            {/* Desktop Links */}
+            {/* Desktop Navigation */}
             <ul className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => (
                 <li key={link.href}>
@@ -108,7 +126,7 @@ const Navbar = () => {
             </ul>
 
             <div className="flex items-center gap-3">
-              {/* Language Selector */}
+              {/* Language Picker */}
               <div className="hidden md:block relative" ref={dropdownRef}>
                 <button
                   onClick={() => setLangOpen(!langOpen)}
@@ -131,12 +149,12 @@ const Navbar = () => {
                 )}
               </div>
 
-              {/* Desktop Identity Block */}
+              {/* User Identity Section */}
               {isLoading ? (
                 <div className="h-9 w-9 rounded-full bg-white/5 animate-pulse border border-white/10" />
               ) : !user ? (
                 <Link href="/login" className="bg-white text-black px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-sky-400 transition-all">
-                  <LText content={{ en: "Login", am: "ይግቡ" }} />
+                  <LText content={{ en: "Login", am: "ይግቡ", si: "Ein" }} />
                 </Link>
               ) : (
                 <div className="relative" ref={userMenuRef}>
@@ -166,23 +184,23 @@ const Navbar = () => {
                           {user.name} {user?.role === "admin" && <HiShieldCheck className="text-indigo-400" />}
                         </p>
                         <p className="text-[8px] font-bold text-zinc-500 truncate italic group-hover:text-sky-500 transition-colors uppercase">
-                          <LText content={{ en: "View Profile", am: "መገለጫን ይመልከቱ" }} />
+                          <LText content={{ en: "View Profile", am: "መገለጫን ይመልከቱ", si: "Mekela" }} />
                         </p>
                       </Link>
                       {user?.role === "admin" && (
                         <Link href="/admin" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase text-indigo-400 hover:bg-indigo-500/10 transition-all">
-                          <HiShieldCheck size={14} /> Admin Panel
+                          <HiShieldCheck size={14} /> <LText content={{ en: "Admin", am: "አስተዳዳሪ", si: "Admin" }} />
                         </Link>
                       )}
                       <button onClick={() => signOut()} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase text-red-500 hover:bg-red-500/10 transition-all mt-1">
-                        <HiLogout size={14} /> <LText content={{ en: "Logout", am: "ውጣ" }} />
+                        <HiLogout size={14} /> <LText content={{ en: "Logout", am: "ውጣ", si: "Fula" }} />
                       </button>
                     </div>
                   )}
                 </div>
               )}
 
-              {/* Mobile Toggle */}
+              {/* Mobile Menu Toggle */}
               <button onClick={() => setIsOpen(true)} className="lg:hidden text-white p-2.5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
                 <HiMenuAlt3 size={20} />
               </button>
@@ -191,19 +209,30 @@ const Navbar = () => {
         </header>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Sidebar Overlay */}
       <div className={`fixed inset-0 z-[100] bg-black transition-transform duration-500 ${isOpen ? "translate-y-0" : "translate-y-full"}`}>
-        <div className="flex justify-between p-6">
-          <span className="font-black text-xl text-white uppercase italic">
-            Hawassa<span className="text-sky-500">Pulse</span>
-          </span>
+        <div className="flex justify-between items-center p-6">
+          <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
+            <div className="relative h-11 w-11">
+              <Image
+                src="/logo.png"
+                alt="Hawassa Nexus Logo"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+            <span className="font-display text-lg text-white uppercase italic leading-none">
+              Hawassa<span className="text-sky-500">Nexus</span>
+            </span>
+          </Link>
           <button onClick={() => setIsOpen(false)} className="p-3 text-white bg-white/5 rounded-2xl active:scale-90 transition-transform">
             <HiX size={24} />
           </button>
         </div>
 
         <div className="px-6 space-y-3 overflow-y-auto max-h-[80vh]">
-          {/* Mobile Language */}
+          {/* Mobile Language Selector */}
           <div className="flex gap-2 mb-6">
             {languages.map((l) => (
               <button
@@ -218,7 +247,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Mobile Identity */}
+          {/* Mobile Profile Link */}
           {user && (
             <Link
               href={`/profile/${user.id}`}
@@ -235,11 +264,12 @@ const Navbar = () => {
                 )}
               </div>
               <span className={getFontSize("text-sm", "text-base")}>
-                <LText content={{ en: "My Profile", am: "መገለጫዬ" }} />
+                <LText content={{ en: "My Profile", am: "መገለጫዬ", si: "Mekela" }} />
               </span>
             </Link>
           )}
 
+          {/* Mobile Nav Links */}
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -253,22 +283,23 @@ const Navbar = () => {
             </Link>
           ))}
 
+          {/* Admin and Auth Buttons */}
           {user?.role === "admin" && (
             <Link href="/admin" onClick={() => setIsOpen(false)} className="block p-6 bg-indigo-500/5 border border-indigo-500/20 rounded-3xl text-indigo-400 font-black uppercase tracking-widest italic flex items-center gap-3">
               <HiShieldCheck size={20} />
               <span className={getFontSize("text-xs", "text-sm")}>
-                <LText content={{ en: "Admin Dashboard", am: "የአስተዳዳሪ ፓነል" }} />
+                <LText content={{ en: "Admin Dashboard", am: "የአስተዳዳሪ ፓነል", si: "Admin" }} />
               </span>
             </Link>
           )}
 
           {!user ? (
             <Link href="/login" onClick={() => setIsOpen(false)} className="block w-full py-6 bg-white text-black text-center font-black uppercase rounded-3xl mt-4 italic text-sm shadow-xl active:scale-95 transition-transform">
-              Access the Grid
+              <LText content={{ en: "Access the Grid", am: "ይግቡ", si: "Ein" }} />
             </Link>
           ) : (
             <button onClick={() => signOut()} className="block w-full py-6 bg-red-500/5 text-red-500 border border-red-500/10 text-center font-black uppercase rounded-3xl mt-4 text-xs">
-              Terminate Session
+              <LText content={{ en: "Terminate Session", am: "ውጣ", si: "Fula" }} />
             </button>
           )}
         </div>

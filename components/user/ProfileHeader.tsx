@@ -1,69 +1,78 @@
+"use client";
 import Image from "next/image";
-import { FaMapMarkerAlt, FaLink, FaCalendarAlt } from "react-icons/fa";
-import LText from "./LanguageFriendlyText";
+import LText from "@/components/LanguageFriendlyText";
+import {
+  HiOutlineMail,
+  HiOutlineCalendar,
+  HiOutlineIdentification,
+} from "react-icons/hi";
+import { signOut } from "next-auth/react";
 
-interface Props {
-  user: any;
-}
+export default function ProfileHeader({ user }: { user: any }) {
+  const joinDate = new Date(user.createdAt).toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
 
-const ProfileHeader = ({ user }: Props) => {
   return (
-    <div className="w-full bg-[#000000] border-b border-white/10 pb-12">
-      <div className="relative h-48 w-full bg-gradient-to-r from-sky-900/20 to-indigo-900/20">
-        {/* Abstract pattern or cover image could go here */}
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
-      </div>
+    <div className="max-w-7xl mx-auto px-4 md:px-8">
+      <div className="relative p-8 md:p-12 rounded-[3rem] border border-white/10 bg-gradient-to-br from-zinc-900/50 to-black overflow-hidden">
+        {/* Abstract Background Accent */}
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-sky-500/10 blur-[100px] rounded-full" />
 
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="relative -mt-16 flex flex-col md:flex-row items-end gap-6">
-          <div className="relative h-40 w-40 rounded-[2.5rem] border-4 border-[#000000] overflow-hidden bg-zinc-900 shadow-2xl">
-            <Image
-              src={user.picture}
-              alt={user.name}
-              fill
-              className="object-cover"
-            />
+        <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
+          {/* Avatar Area */}
+          <div className="relative group">
+            <div className="absolute inset-0 bg-sky-500 rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity" />
+            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-white/10 p-1 bg-black overflow-hidden relative">
+              <Image
+                src={user.image || "/default-avatar.png"}
+                alt={user.name}
+                className="w-full h-full object-cover rounded-full grayscale hover:grayscale-0 transition-all duration-500"
+              />
+            </div>
           </div>
 
-          <div className="flex-1 pb-2">
-            <h1 className="text-4xl font-black text-white uppercase italic tracking-tighter">
-              {user.name}
-            </h1>
-            <p className="text-sky-500 font-bold tracking-widest text-xs uppercase mt-1">
-              @{user.username} • {user.role}
-            </p>
-          </div>
+          {/* User Details */}
+          <div className="flex-1 text-center md:text-left">
+            <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
+              <h1 className="text-4xl md:text-5xl font-black text-white uppercase italic tracking-tighter">
+                {user.name}
+              </h1>
+              <span className="px-4 py-1 rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-500 text-[10px] font-black uppercase tracking-widest self-center">
+                Verified Resident
+              </span>
+            </div>
 
-          <div className="flex gap-3 pb-2">
-            <button className="px-6 py-3 bg-white text-black font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-zinc-200 transition-all">
-              Edit Profile
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex items-center justify-center md:justify-start gap-3 text-zinc-400">
+                <HiOutlineMail className="text-sky-500" size={18} />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  {user.email}
+                </span>
+              </div>
+              <div className="flex items-center justify-center md:justify-start gap-3 text-zinc-400">
+                <HiOutlineCalendar className="text-sky-500" size={18} />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  <LText
+                    content={{
+                      en: `Joined ${joinDate}`,
+                      am: `ከ ${joinDate} ጀምሮ`,
+                    }}
+                  />
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => signOut()}
+              className="text-zinc-500 hover:text-red-500 transition-colors text-xs font-black uppercase"
+            >
+              Terminate Session
             </button>
           </div>
-        </div>
-
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-zinc-400 text-sm font-medium">
-          {user.location && (
-            <div className="flex items-center gap-2">
-              <FaMapMarkerAlt className="text-sky-500" />
-              <span>{user.location}</span>
-            </div>
-          )}
-          <div className="flex items-center gap-2">
-            <FaCalendarAlt className="text-sky-500" />
-            <span>Joined {new Date(user.joinedAt).toLocaleDateString()}</span>
-          </div>
-          {user.portfolioWebsite && (
-            <div className="flex items-center gap-2">
-              <FaLink className="text-sky-500" />
-              <a href={user.portfolioWebsite} className="hover:text-white transition-colors">
-                {user.portfolioWebsite}
-              </a>
-            </div>
-          )}
         </div>
       </div>
     </div>
   );
-};
-
-export default ProfileHeader;
+}

@@ -1,43 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { HiArrowRight } from "react-icons/hi";
+import { HiArrowRight } from "react-icons/hi2";
 
-const ExploreBtn = () => {
-  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    e.preventDefault();
-    const href = e.currentTarget.getAttribute("href");
-    if (href) {
-      const targetId = href.replace("#", "");
-      const elem = document.getElementById(targetId);
-      elem?.scrollIntoView({
-        behavior: "smooth",
-      });
-    }
-  };
-
+const ExploreBtn = () => { 
   return (
     <div className="relative group w-full sm:w-auto">
-      {/* 1. The "Pulse" Glow Effect (Hidden by default, glows on hover) */}
-      <div className="absolute inset-0 bg-sky-500 blur-2xl rounded-3xl opacity-20 group-hover:opacity-60 transition-opacity duration-500" />
+      {/* High-End Ambient Glow */}
+      <div className="absolute -inset-1 bg-gradient-to-r from-sky-400 to-indigo-500 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500" />
       
       <Link
-        href="/Event"
-        className="relative z-10 flex items-center justify-center gap-3 bg-sky-500 text-slate-950 font-black text-lg px-10 py-5 rounded-[1.5rem] w-full sm:w-auto transition-all duration-300 hover:-translate-y-1 active:scale-95 shadow-xl"
+        href="/explore"
+        className="relative z-10 flex items-center justify-between gap-8 bg-gradient-to-br from-sky-500 to-sky-600 text-white px-7 py-4 rounded-xl border border-white/20 shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
       >
-        <span className="tracking-tighter uppercase italic">Explore Pulse</span>
+        {/* Dynamic Text */}
+        <span className="font-sans text-lg font-bold tracking-tight">
+          Discover Events
+        </span>
         
-        {/* Animated Arrow */}
-        <div className="relative flex items-center overflow-hidden">
-          <HiArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-          
-          {/* Subtle Shine Reflection */}
-          <div className="absolute inset-0 w-full h-full bg-linear-to-r from-white/0 via-white/30 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+        {/* Animated Icon Circle */}
+        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 group-hover:bg-white group-hover:text-sky-600 transition-all duration-500">
+          <HiArrowRight className="h-5 w-5 transition-transform duration-500 group-hover:translate-x-1 group-hover:-rotate-45" />
+        </div>
+
+        {/* Premium "Glass Flash" Effect */}
+        <div className="absolute inset-0 overflow-hidden rounded-xl pointer-events-none">
+          <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent via-white/25 to-transparent group-hover:animate-[shine_0.75s_ease-in-out]" />
         </div>
       </Link>
-
-      {/* 2. Professional Border Glow (Micro-detail) */}
-      <div className="absolute inset-0 rounded-[1.5rem] border border-white/20 pointer-events-none group-hover:border-sky-400/50 transition-colors" />
     </div>
   );
 };

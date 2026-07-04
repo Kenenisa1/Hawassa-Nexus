@@ -4,8 +4,10 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import EventCard from "@/components/EventCard";
 import HeroSection from "@/components/HeroSection"; 
-import { IEvent } from "@/database";
+import UpcomingEvents from "@/components/UpcomingEvents";
+import type { IEvent } from "@/database";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import LText from "@/components/LanguageFriendlyText";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -31,30 +33,47 @@ const PulseHomeUI = ({ events }: { events: IEvent[] }) => {
   const isLoading = events === undefined || events === null;
 
   return (
-    <div className="min-h-screen bg-[#030014] text-white font-sans selection:bg-violet-500/30 overflow-x-hidden">
+    <div className="min-h-screen bg-[#000000] text-white font-sans selection:bg-sky-500/30 overflow-x-hidden">
       
-      {/* Ambient Background */}
+      {/* Ambient Background - Subtle OLED Accents */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-5%] left-[-5%] w-[60%] h-[60%] bg-violet-600/5 blur-[120px] rounded-full animate-pulse" />
-        <div className="absolute bottom-[-5%] right-[-5%] w-[60%] h-[60%] bg-indigo-600/5 blur-[120px] rounded-full" />
+        <div className="absolute top-[-5%] left-[-5%] w-[60%] h-[60%] bg-sky-600/5 blur-[140px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-5%] right-[-5%] w-[60%] h-[60%] bg-indigo-600/5 blur-[140px] rounded-full" />
       </div>
 
       <HeroSection />
 
+      <UpcomingEvents events={events} />
+
       <section id="events" className="relative z-10 max-w-7xl mx-auto px-6 py-24">
         
         {/* Section Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-16">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between mb-20">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <p className="text-[10px] font-black text-violet-500 uppercase tracking-[0.4em] mb-2">
-              የቅርብ ጊዜ ኩነቶች (The Latest Pulse)
+            <p className="text-[10px] font-black text-sky-500 uppercase tracking-[0.5em] mb-3">
+              <LText content={{ 
+                en: "The Latest Pulse", 
+                am: "የቅርብ ጊዜ ኩነቶች", 
+                si: "Haaro Woyitoota" 
+              }} />
             </p>
-            <h2 className="text-4xl md:text-5xl font-black text-white italic uppercase tracking-tighter">
-              ተለይተው የቀረቡ <span className="text-violet-500">ዝግጅቶች</span>
+            <h2 className="text-2xl sm:text-3xl font-black text-white italic uppercase tracking-tighter">
+              <LText content={{ 
+                en: "Featured", 
+                am: "ተለይተው የቀረቡ", 
+                si: "Baxxe" 
+              }} /> 
+              <span className="text-sky-500 ml-2">
+                <LText content={{ 
+                  en: "Events", 
+                  am: "ዝግጅቶች", 
+                  si: "Woyitoota" 
+                }} />
+              </span>
             </h2>
           </motion.div>
 
@@ -62,9 +81,13 @@ const PulseHomeUI = ({ events }: { events: IEvent[] }) => {
             <motion.button 
               whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
               whileTap={{ scale: 0.95 }}
-              className="text-[12px] font-black text-zinc-400 hover:text-white transition-all bg-white/5 px-6 py-3 rounded-full border border-white/10 uppercase tracking-widest"
+              className="text-[10px] font-black text-zinc-400 hover:text-white transition-all bg-white/5 px-8 py-4 rounded-full border border-white/10 uppercase tracking-[0.2em]"
             >
-              ሁሉንም ይመልከቱ →
+              <LText content={{ 
+                en: "Explore All →", 
+                am: "ሁሉንም ይመልከቱ →", 
+                si: "Duucha La'i →" 
+              }} />
             </motion.button>
           </Link>
         </div>
@@ -75,7 +98,7 @@ const PulseHomeUI = ({ events }: { events: IEvent[] }) => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
         >
           {hasEvents ? (
             featuredEvents.map((event: IEvent, index: number) => (
@@ -84,8 +107,9 @@ const PulseHomeUI = ({ events }: { events: IEvent[] }) => {
                 variants={itemVariants}
                 className="group"
               >
-                <div className="relative transform group-hover:-translate-y-3 transition-all duration-500 ease-[0.16, 1, 0.3, 1]">
-                  <div className="absolute inset-0 bg-violet-500/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity rounded-[32px]" />
+                <div className="relative transform group-hover:-translate-y-4 transition-all duration-700 ease-[0.16, 1, 0.3, 1]">
+                  {/* High-end Glow Effect */}
+                  <div className="absolute inset-0 bg-sky-500/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-[32px]" />
                   <div className="relative">
                     <EventCard {...event} />
                   </div>
@@ -93,16 +117,24 @@ const PulseHomeUI = ({ events }: { events: IEvent[] }) => {
               </motion.div>
             ))
           ) : isLoading ? (
-            <div className="col-span-full py-32 flex flex-col items-center justify-center border border-dashed border-white/5 rounded-[40px] bg-white/[0.01]">
+            <div className="col-span-full py-40 flex flex-col items-center justify-center border border-white/5 rounded-[40px] bg-white/[0.01] backdrop-blur-sm">
                <LoadingSpinner />
-               <p className="mt-4 text-[12px] font-black text-zinc-600 uppercase tracking-widest animate-pulse">
-                 መረጃዎች በመጫን ላይ ናቸው... (Synchronizing)
+               <p className="mt-6 text-[10px] font-black text-zinc-500 uppercase tracking-[0.4em] animate-pulse italic">
+                 <LText content={{ 
+                   en: "Synchronizing...", 
+                   am: "መረጃዎች በመጫን ላይ ናቸው...", 
+                   si: "Ha'lamanni no..." 
+                 }} />
                </p>
             </div>
           ) : (
-            <div className="col-span-full py-32 text-center border border-dashed border-white/5 rounded-[40px] bg-white/[0.01]">
-               <p className="text-zinc-500 font-black uppercase tracking-[0.3em] italic text-sm">
-                 ምንም የተገኙ ዝግጅቶች የሉም። (Pulse is quiet)
+            <div className="col-span-full py-40 text-center border border-dashed border-white/10 rounded-[40px] bg-white/[0.01]">
+               <p className="text-zinc-600 font-black uppercase tracking-[0.3em] italic text-sm">
+                 <LText content={{ 
+                   en: "Pulse is quiet", 
+                   am: "ምንም የተገኙ ዝግጅቶች የሉም", 
+                   si: "Woyitootu dino" 
+                 }} />
                </p>
             </div>
           )}

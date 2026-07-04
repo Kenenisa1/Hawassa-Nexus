@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { deleteEvent } from "@/lib/actions/event.actions";
+import Pagination from "@/components/Pagination";
 import {
   MdEdit,
   MdDeleteSweep,
@@ -11,7 +12,7 @@ import {
   MdOpenInNew,
   MdWarning,
 } from "react-icons/md";
-import { IEvent } from "@/database/event.model";
+import type { IEvent } from "@/database/event.model";
 import { toast } from "sonner";
 
 interface AdminTableProps {
@@ -23,6 +24,12 @@ const AdminTable = ({ events }: AdminTableProps) => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [localEvents, setLocalEvents] = useState<IEvent[]>(events || []);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 7;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, localEvents]);
 
   useEffect(() => {
     if (Array.isArray(events)) {
@@ -46,17 +53,30 @@ const AdminTable = ({ events }: AdminTableProps) => {
    * Handles both new object titles {en, am, si} and legacy string titles.
    */
   const filteredEvents = (localEvents || []).filter((event) => {
+    if (!event) return false;
     // 1. Resolve title safely: prioritize English, fallback to string, or empty string
     const resolvedTitle = typeof event?.title === 'string' 
       ? event.title 
       : (event?.title?.en || "");
 
     const title = resolvedTitle.toLowerCase();
-    const category = (event?.category || "").toLowerCase();
-    const search = searchTerm.toLowerCase();
+    
+    // Safely handle category which might be an object
+    const resolvedCategory = typeof event?.category === 'string'
+      ? event.category
+      : (event?.category?.en || "");
+    const category = resolvedCategory.toLowerCase();
+    
+    const search = (searchTerm || "").toLowerCase();
 
     return title.includes(search) || category.includes(search);
   });
+
+  const totalPages = Math.ceil(filteredEvents.length / ITEMS_PER_PAGE);
+  const paginatedEvents = filteredEvents.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const confirmDelete = async () => {
     if (!deleteId) return;
@@ -131,7 +151,7 @@ const AdminTable = ({ events }: AdminTableProps) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {filteredEvents.map((event) => {
+            {paginatedEvents.map((event) => {
               // Resolved title for display
               const displayTitle = typeof event.title === 'string' ? event.title : event.title?.en;
 
@@ -163,10 +183,10 @@ const AdminTable = ({ events }: AdminTableProps) => {
                   <td className="p-6">
                     <div className="flex flex-col gap-1">
                       <span className="text-[10px] font-black text-sky-500/80 uppercase bg-sky-500/5 border border-sky-500/10 px-2 py-0.5 rounded-md w-fit">
-                        {event.category}
+                        {typeof event.category === 'string' ? event.category : (event.category?.en || "Unknown")}
                       </span>
                       <span className="text-[10px] font-bold text-zinc-500 uppercase px-2">
-                        {event.mode}
+                        {typeof event.mode === 'string' ? event.mode : (event.mode?.en || "Unknown")}
                       </span>
                     </div>
                   </td>
@@ -181,7 +201,7 @@ const AdminTable = ({ events }: AdminTableProps) => {
                   <td className="p-6 relative ">
                     <div className="flex items-center gap-2">
                       <Link
-                        href={`/Event`}
+                        href={`/explore`}
                         className="p-2.5 bg-white/5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-all"
                       >
                         <MdOpenInNew size={18} />
@@ -245,6 +265,14 @@ const AdminTable = ({ events }: AdminTableProps) => {
           </tbody>
         </table>
       </div>
+
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 };
