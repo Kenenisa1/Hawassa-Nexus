@@ -23,7 +23,7 @@ const navLinks = [
   { name: { en: "Explore", am: "ኩነቶች", si: "Woyitoota" }, href: "/explore" },
   { name: { en: "City Hubs", am: "ማዕከላት", si: "Gidduubba" }, href: "/hubs" },
   { name: { en: "Vision", am: "ራዕይ", si: "Illacha" }, href: "/about" },
-  { name: { en: "Support", am: "እገዛ", si: "Irko" }, href: "/contact" },
+  { name: { en: "Support", am: "እገዛ", si: "Irko" }, href: "/support" },
 ];
 
 /**
