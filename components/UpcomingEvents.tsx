@@ -58,6 +58,7 @@ const EVENTS_PER_PAGE = 1;
 const EventSlide = ({ event, direction }: { event: IEvent; direction: number }) => {
   const countdown = useCountdown(event.date);
   const isUpcoming = new Date(event.date).getTime() > Date.now();
+  const isToday = new Date(event.date).toDateString() === new Date().toDateString();
 
   return (
     <motion.div
@@ -91,6 +92,11 @@ const EventSlide = ({ event, direction }: { event: IEvent; direction: number }) 
             <span className="px-3 py-1 rounded-xl border border-sky-500/30 bg-sky-500/10 text-[9px] font-black uppercase tracking-widest text-sky-400 backdrop-blur-md">
               {resolveField(event.category)}
             </span>
+            {isToday && (
+              <span className="px-3 py-1 rounded-xl border border-rose-500/30 bg-rose-500/10 text-[9px] font-black uppercase tracking-widest text-rose-400 backdrop-blur-md animate-pulse">
+                LIVE NOW
+              </span>
+            )}
             {event.isFeatured && (
               <span className="px-3 py-1 rounded-xl border border-amber-500/30 bg-amber-500/10 text-[9px] font-black uppercase tracking-widest text-amber-400 backdrop-blur-md">
                 Featured

@@ -3,17 +3,22 @@
 import { motion } from "framer-motion";
 import {
   HiOutlineQuestionMarkCircle,
-  HiOutlineEnvelope,
-  HiOutlinePhone,
   HiOutlineLightBulb,
   HiArrowRight,
   HiChevronDown,
 } from "react-icons/hi";
-import { FaHeartbeat, FaBook, FaComments, FaPlayCircle } from "react-icons/fa";
+import { FaHeartbeat, FaBook, FaComments, FaPlayCircle, FaEnvelope, FaPhone, FaHandshake, FaTelegramPlane } from "react-icons/fa";
 import LText from "@/components/LanguageFriendlyText";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState } from "react";
 import Link from "next/link";
+
+// Additional contact card data
+const contactCards = [
+  { title: "General Support", phone: "+251-912-345678", position: "Support Lead", tg: "@HawassaSupport", email: "support@hawassapulse.com" },
+  { title: "Partnerships", phone: "+251-911-223344", position: "Partnerships", tg: "@HawassaPartners", email: "partners@hawassapulse.com" },
+  { title: "Media & Press", phone: "+251-922-556677", position: "Media", tg: "@HawassaMedia", email: "press@hawassapulse.com" },
+];
 
 // Animation variants
 const fadeInUp = {
@@ -174,7 +179,7 @@ const supportCategories = [
     },
   },
   {
-    icon: <HiOutlineEnvelope />,
+    icon: <FaHandshake />,
     title: { en: "Partnerships", am: "ክፍለ ተቋማት", si: "Walqabata" },
     description: {
       en: "Information about becoming a business partner or listing your events.",
@@ -382,6 +387,29 @@ export default function SupportClient() {
           </div>
         </motion.section>
 
+        {/* Contact Info Cards */}
+        <motion.section
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="mb-32"
+        >
+          <h2 className="text-2xl md:text-3xl font-black text-white mb-8 uppercase italic tracking-tighter">Contact Info</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {contactCards.map((c, i) => (
+              <motion.div key={i} variants={fadeInUp} className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                <h3 className="text-lg font-black text-white mb-2">{c.title}</h3>
+                <p className="text-sm text-zinc-400 mb-3">{c.position}</p>
+                <ul className="space-y-2 text-sm">
+                  <li className="text-zinc-300"><FaPhone className="inline mr-2 text-sky-500" /> {c.phone}</li>
+                  <li className="text-zinc-300"><FaEnvelope className="inline mr-2 text-sky-500" /> {c.email}</li>
+                  <li className="text-zinc-300"><FaTelegramPlane className="inline mr-2 text-sky-500" /> {c.tg}</li>
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
         {/* CTA Section */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}

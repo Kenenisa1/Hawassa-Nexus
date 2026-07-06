@@ -61,10 +61,13 @@ const AdminTable = ({ events }: AdminTableProps) => {
 
     const title = resolvedTitle.toLowerCase();
     
-    // Safely handle category which might be an object
-    const resolvedCategory = typeof event?.category === 'string'
-      ? event.category
-      : (event?.category?.en || "");
+    // Safely handle category which might be an object or string
+    let resolvedCategory: string = "";
+    if (typeof event?.category === 'string') {
+      resolvedCategory = event.category;
+    } else if (event?.category && typeof event.category === 'object' && 'en' in event.category) {
+      resolvedCategory = (event.category as any).en || "";
+    }
     const category = resolvedCategory.toLowerCase();
     
     const search = (searchTerm || "").toLowerCase();
@@ -153,7 +156,7 @@ const AdminTable = ({ events }: AdminTableProps) => {
           <tbody className="divide-y divide-white/5">
             {paginatedEvents.map((event) => {
               // Resolved title for display
-              const displayTitle = typeof event.title === 'string' ? event.title : event.title?.en;
+              const displayTitle = typeof event.title === 'string' ? event.title : (typeof event.title === 'object' && 'en' in event.title ? (event.title as any).en : "Unknown");
 
               return (
                 <tr
@@ -183,10 +186,10 @@ const AdminTable = ({ events }: AdminTableProps) => {
                   <td className="p-6">
                     <div className="flex flex-col gap-1">
                       <span className="text-[10px] font-black text-sky-500/80 uppercase bg-sky-500/5 border border-sky-500/10 px-2 py-0.5 rounded-md w-fit">
-                        {typeof event.category === 'string' ? event.category : (event.category?.en || "Unknown")}
+                        {typeof event.category === 'string' ? event.category : (typeof event.category === 'object' && 'en' in event.category ? (event.category as any).en : "Unknown")}
                       </span>
                       <span className="text-[10px] font-bold text-zinc-500 uppercase px-2">
-                        {typeof event.mode === 'string' ? event.mode : (event.mode?.en || "Unknown")}
+                        {typeof event.mode === 'string' ? event.mode : (typeof event.mode === 'object' && 'en' in event.mode ? (event.mode as any).en : "Unknown")}
                       </span>
                     </div>
                   </td>

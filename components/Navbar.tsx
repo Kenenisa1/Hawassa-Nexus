@@ -97,6 +97,7 @@ const Navbar = () => {
                   alt="Hawassa Nexus Logo"
                   height={150}
                   width={150}
+                  loading="eager"
                 />
               </div>
               <div className="flex flex-col">
@@ -218,6 +219,8 @@ const Navbar = () => {
                 src="/logo.png"
                 alt="Hawassa Nexus Logo"
                 fill
+                sizes="(max-width: 768px) 64px, 150px"
+                loading="eager"
                 className="object-contain"
                 priority
               />

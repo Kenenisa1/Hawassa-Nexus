@@ -38,6 +38,8 @@ const EventCard = ({
 }: Props) => {
   const { t } = useLanguage();
 
+  const isToday = new Date(date).toDateString() === new Date().toDateString();
+
   // Safe fallback for image alt tags and non-JSX attributes
   const getPlainString = (field: any) => {
     if (typeof field === "object") return field.en || "";
@@ -70,6 +72,11 @@ const EventCard = ({
             <div className="px-3 py-1.5 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md text-[8px] font-black uppercase tracking-widest text-sky-400">
               {t(category)}
             </div>
+            {isToday && (
+              <div className="px-3 py-1.5 rounded-xl border border-red-500/30 bg-red-500/10 backdrop-blur-md text-[8px] font-black uppercase tracking-widest text-rose-400 animate-pulse">
+                LIVE
+              </div>
+            )}
             {isFree && (
               <div className="px-3 py-1.5 rounded-xl border border-green-500/20 bg-green-500/10 backdrop-blur-md text-[8px] font-black uppercase tracking-widest text-green-400">
                 Free Access

@@ -79,6 +79,11 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>;
   }
 
   const sS = (field: any) => typeof field === 'object' ? field.en : (field || "");
+  const mapTarget = event.location || event.venue || "Hawassa, Ethiopia";
+  const mapQuery = encodeURIComponent(mapTarget);
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${mapQuery}&zoom=15&size=640x320&maptype=roadmap&markers=color:red%7C${mapQuery}${googleMapsApiKey ? `&key=${googleMapsApiKey}` : ""}`;
 
   return (
     <div className="min-h-screen bg-[#000000] text-zinc-100 pb-32 selection:bg-sky-500/30">
@@ -221,6 +226,37 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>;
               <div className="space-y-6">
                 {/* Standardized BookEvent */}
                 <BookEvent eventId={event._id.toString()} slug={event.slug} />
+
+                <div className="mt-8 rounded-[2.5rem] overflow-hidden border border-white/10 bg-white/5 shadow-xl shadow-sky-500/5">
+                  <a
+                    href={mapsUrl}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="block"
+                  >
+                    <div className="relative h-48 w-full overflow-hidden">
+                      <Image
+                        src={staticMapUrl}
+                        alt={`Map location for ${sS(event.location)}`}
+                        fill
+                        className="object-cover transition-transform duration-700 hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 360px"
+                      />
+                    </div>
+                  </a>
+                  <div className="p-5 bg-black/60">
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-zinc-500 font-black mb-2">Get Location</p>
+                    <a
+                      href={mapsUrl}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="inline-flex items-center justify-between w-full rounded-2xl bg-sky-500/10 border border-sky-500/20 px-4 py-3 text-sky-300 text-sm font-black uppercase tracking-[0.2em] hover:bg-sky-500/20 transition"
+                    >
+                      Open in Google Maps
+                      <FaArrowRight />
+                    </a>
+                  </div>
+                </div>
                 
                 <div className="pt-6 border-t border-white/5">
                    <div className="flex items-center gap-2 text-zinc-500 mb-4">

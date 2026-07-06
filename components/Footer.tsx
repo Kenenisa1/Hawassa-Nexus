@@ -87,8 +87,10 @@ const Footer = () => {
                 <Image
                   src="/logo.png"
                   alt="Hawassa Nexus Logo"
-                  fill
-                  className="object-contain drop-shadow-lg"
+                    fill
+                    sizes="(max-width: 768px) 64px, 150px"
+                    loading="eager"
+                    className="object-contain drop-shadow-lg"
                 />
               </div>
               <div className="flex flex-col">
