@@ -24,6 +24,7 @@ const navLinks = [
   { name: { en: "City Hubs", am: "ማዕከላት", si: "Gidduubba" }, href: "/hubs" },
   { name: { en: "Vision", am: "ራዕይ", si: "Illacha" }, href: "/about" },
   { name: { en: "Support", am: "እገዛ", si: "Irko" }, href: "/support" },
+  { name: { en: "Contact", am: "አገናኝ", si: "Wal Quunnamtii" }, href: "/contact" },
 ];
 
 /**
