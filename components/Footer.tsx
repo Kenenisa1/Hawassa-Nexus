@@ -1,39 +1,28 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { FaTelegramPlane, FaLinkedinIn, FaFacebookF } from "react-icons/fa";
+import { FaTelegramPlane, FaFacebookF } from "react-icons/fa";
+import { SiTiktok } from "react-icons/si";
 import { HiOutlineLightningBolt, HiCheckCircle } from "react-icons/hi";
 import { useLanguage } from "@/context/LanguageContext";
 
 const Footer = () => {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const { language } = useLanguage();
 
   const content = {
     en: {
       description: "Saving energy and time for the Hawassa community. The central source for city events, industrial hubs, and community gatherings.",
-      newsletterTitle: "Stay Updated",
-      newsletterSub: "Never miss a major event in the Lake City.",
-      btnJoin: "Join Newsletter",
       status: "Systems Nominal",
       sections: { discover: "Discover", org: "Organization" },
     },
     am: {
       description: "ለሀዋሳ ማህበረሰብ ጉልበትና ጊዜን መቆጠብ። ለከተማ ዝግጅቶች፣ ለኢንዱስትሪ ማዕከላት እና ለማህበረሰብ ስብሰባዎች ማዕከላዊ ምንጭ።",
-      newsletterTitle: "አዳዲስ መረጃዎች",
-      newsletterSub: "በሐይቁ ከተማ ዋና ዋና ዝግጅቶችን እንዳያመልጥዎ።",
-      btnJoin: "ይመዝገቡ",
       status: "ሲስተም በጥሩ ሁኔታ ላይ ነው",
       sections: { discover: "ይቃኙ", org: "ድርጅት" },
     },
     si: {
       description: "Hawassa miidiyadii yannanna wolqa gatisate. Quchi woyitoota, industire gidduubbanna mannu gambooshshe mereero.",
-      newsletterTitle: "Haaro Mashalaqqe",
-      newsletterSub: "Baaru quchi woyitoota dihuluullitooti.",
-      btnJoin: "Xaadi",
       status: "Olluu Giddo",
       sections: { discover: "La'i", org: "Uurrinsha" },
     },
@@ -52,30 +41,11 @@ const Footer = () => {
     ],
   };
 
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-    setStatus("loading");
-    try {
-      const response = await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      if (response.ok) {
-        setStatus("success");
-        setEmail("");
-        setTimeout(() => setStatus("idle"), 5000);
-      } else { setStatus("error"); }
-    } catch (err) { setStatus("error"); }
-  };
-
-  // Language helper logic
   const t = content[language as keyof typeof content] || content.en;
 
   return (
     <footer className="relative bg-[#000000] border-t border-white/5 overflow-hidden font-sans">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-sky-500/30 to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-linear-to-r from-transparent via-sky-500/30 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-6 pt-20 pb-12 relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-16 md:gap-8">
@@ -83,7 +53,7 @@ const Footer = () => {
           {/* BRAND COLUMN */}
           <div className="md:col-span-4 space-y-6">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative h-16 w-16 flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
+              <div className="relative h-16 w-16 shrink-0 transition-transform duration-300 group-hover:scale-105">
                 <Image
                   src="/logo.png"
                   alt="Hawassa Nexus Logo"
@@ -103,12 +73,48 @@ const Footer = () => {
             <p className="text-zinc-500 text-sm leading-relaxed max-w-sm font-medium">
               {t.description}
             </p>
-            <div className="flex gap-3">
-              {[FaTelegramPlane, FaLinkedinIn, FaFacebookF].map((Icon, i) => (
-                <Link key={i} href="#" className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-sky-400 transition-all hover:bg-white/10">
-                  <Icon />
-                </Link>
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Link
+                href="https://t.me/HawassaNexus"
+                target="_blank"
+                rel="noreferrer"
+                title="Hawassa Nexus on Telegram"
+                className="group rounded-4xl border border-white/10 bg-slate-950/80 p-5 text-center transition-all hover:border-sky-500/30 hover:bg-sky-500/10"
+              >
+                <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-sky-500/10 text-sky-400 transition-all group-hover:bg-sky-500/20">
+                  <FaTelegramPlane className="text-2xl" />
+                </div>
+                <p className="text-xs font-black uppercase tracking-[0.3em] text-white">Telegram</p>
+                <p className="mt-1 text-[11px] text-zinc-500">@HawassaNexus</p>
+              </Link>
+
+              <Link
+                href="https://www.facebook.com/HawassaNexus"
+                target="_blank"
+                rel="noreferrer"
+                title="Hawassa Nexus on Facebook"
+                className="group rounded-4xl border border-white/10 bg-slate-950/80 p-5 text-center transition-all hover:border-sky-500/30 hover:bg-sky-500/10"
+              >
+                <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600/10 text-blue-400 transition-all group-hover:bg-blue-600/20">
+                  <FaFacebookF className="text-2xl" />
+                </div>
+                <p className="text-xs font-black uppercase tracking-[0.3em] text-white">Facebook</p>
+                <p className="mt-1 text-[11px] text-zinc-500">facebook.com/HawassaNexus</p>
+              </Link>
+
+              <Link
+                href="https://www.tiktok.com/@hawassanexus"
+                target="_blank"
+                rel="noreferrer"
+                title="Hawassa Nexus on TikTok"
+                className="group rounded-4xl border border-white/10 bg-slate-950/80 p-5 text-center transition-all hover:border-sky-500/30 hover:bg-sky-500/10"
+              >
+                <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-pink-500/10 text-pink-400 transition-all group-hover:bg-pink-500/20">
+                  <SiTiktok className="text-2xl" />
+                </div>
+                <p className="text-xs font-black uppercase tracking-[0.3em] text-white">TikTok</p>
+                <p className="mt-1 text-[11px] text-zinc-500">@hawassanexus</p>
+              </Link>
             </div>
           </div>
 
@@ -144,46 +150,29 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* NEWSLETTER */}
+          {/* CONTACT DETAILS */}
           <div className="md:col-span-4">
-            <div className="p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/5 relative overflow-hidden group">
-              <h3 className="text-white font-black italic uppercase tracking-tighter text-xl mb-2 flex items-center gap-2">
-                <HiOutlineLightningBolt className="text-sky-500" />
-                {t.newsletterTitle}
-              </h3>
-              <p className="text-xs text-zinc-500 mb-6 font-medium">
-                {t.newsletterSub}
-              </p>
-              <form className="space-y-3 relative z-10" onSubmit={handleSubscribe}>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={language === "si" ? "Emailenke..." : language === "am" ? "ኢሜይል ያስገቡ..." : "pulse@example.com"}
-                  className="w-full bg-black border border-white/10 rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:border-sky-500 transition-all placeholder:text-zinc-700 font-medium disabled:opacity-50"
-                  disabled={status === "loading" || status === "success"}
-                />
-                <button
-                  type="submit"
-                  disabled={status === "loading" || status === "success"}
-                  className={`w-full text-[10px] font-black uppercase tracking-[0.2em] py-4 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2
-                    ${status === "success" ? "bg-emerald-500 text-white" : "bg-sky-500 hover:bg-sky-400 text-black"} 
-                    disabled:cursor-not-allowed`}
-                >
-                  {status === "loading" ? (
-                    <div className="h-4 w-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                  ) : status === "success" ? (
-                    <HiCheckCircle className="text-lg" />
-                  ) : t.btnJoin}
-                </button>
-
-                {status === "success" && (
-                  <p className="text-[10px] text-emerald-500 font-bold mt-3 uppercase tracking-tight text-center">
-                    {language === "si" ? "Xaadole ninkera emailatenni kullummo!" : language === "am" ? "አዳዲስ ዝግጅቶች ሲኖሩ በኢሜይል እንገልጽልዎታለን!" : "We'll email you when new events drop!"}
-                  </p>
-                )}
-              </form>
+            <div className="p-8 rounded-[2.5rem] bg-white/2 border border-white/5">
+              <h3 className="text-white font-black italic uppercase tracking-tighter text-xl mb-4">Contact</h3>
+              <div className="space-y-5 text-sm text-zinc-400">
+                <div>
+                  <p className="text-zinc-200 font-bold uppercase tracking-[0.2em] text-[10px] mb-2">Email</p>
+                  <p>hello@hawassapulse.com</p>
+                </div>
+                <div>
+                  <p className="text-zinc-200 font-bold uppercase tracking-[0.2em] text-[10px] mb-2">Phone</p>
+                  <p>+251 912 345 678</p>
+                </div>
+                <div>
+                  <p className="text-zinc-200 font-bold uppercase tracking-[0.2em] text-[10px] mb-2">Location</p>
+                  <p>Hawassa City Center, Southern Ethiopia</p>
+                </div>
+              </div>
+              <div className="mt-8">
+                <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-sky-500 text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-sky-400 transition-all">
+                  Contact Us
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -194,7 +183,7 @@ const Footer = () => {
             © {new Date().getFullYear()} Hawassa Nexus • Made in Hawassa
           </p>
 
-          <div className="flex items-center gap-3 py-3 px-6 rounded-2xl bg-white/[0.03] border border-white/5 backdrop-blur-md">
+          <div className="flex items-center gap-3 py-3 px-6 rounded-2xl bg-white/3 border border-white/5 backdrop-blur-md">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>

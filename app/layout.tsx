@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Bungee, Roboto_Slab, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import ConditionalNavbar from "@/components/ConditionalNavbar";
 import ConditionalFooter from "@/components/ConditionalFooter";
 import { PHProvider } from "./providers";
 import { Suspense } from "react";
@@ -58,9 +58,9 @@ export default function RootLayout({
           <LanguageProvider>
             <PHProvider>
               <Suspense fallback={<LoadingSpinner />}>
-                <Navbar />
+                <ConditionalNavbar />
 
-                <main className="grow">{children}</main>
+                <main className="grow"> {children} </main>
 
                 <Toaster
                   theme="dark"

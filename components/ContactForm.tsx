@@ -29,8 +29,8 @@ const ContactForm = () => {
   if (status === "success") {
     return (
       <div className="text-center py-10 animate-in fade-in zoom-in duration-500">
-        <div className="w-20 h-20 bg-violet-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-violet-500/50 shadow-[0_0_20px_rgba(139,92,246,0.3)]">
-          <FaCheckCircle className="text-violet-400 text-4xl" />
+        <div className="w-20 h-20 bg-sky-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-sky-500/50 shadow-[0_0_20px_rgba(56,189,248,0.3)]">
+          <FaCheckCircle className="text-sky-400 text-4xl" />
         </div>
         <h3 className="text-2xl font-bold text-white mb-2">Message Received</h3>
         <p className="text-zinc-400">
@@ -119,14 +119,14 @@ const ContactForm = () => {
           required
           rows={4}
           placeholder="How can we help?"
-          className="w-full px-4 py-3 bg-zinc-950/50 border border-zinc-800 rounded-2xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all hover:border-zinc-700 resize-none shadow-inner"
+          className="w-full px-4 py-3 bg-zinc-950/50 border border-zinc-800 rounded-2xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition-all hover:border-zinc-700 shadow-inner"
         />
       </div>
 
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full relative group overflow-hidden bg-violet-600 hover:bg-violet-500 disabled:bg-zinc-800 text-white font-bold py-4 rounded-2xl transition-all shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_30px_rgba(124,58,237,0.5)] active:scale-[0.98]"
+        className="w-full relative group overflow-hidden bg-sky-500 hover:bg-sky-400 disabled:bg-zinc-800 text-black font-bold py-4 rounded-2xl transition-all shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.5)] active:scale-[0.98]"
       >
         <div className="relative z-10 flex items-center justify-center gap-2">
           {status === "loading" ? (

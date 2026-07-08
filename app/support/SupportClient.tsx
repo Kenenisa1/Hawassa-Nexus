@@ -7,7 +7,7 @@ import {
   HiArrowRight,
   HiChevronDown,
 } from "react-icons/hi";
-import { FaHeartbeat, FaBook, FaComments, FaPlayCircle, FaEnvelope, FaPhone, FaHandshake, FaTelegramPlane } from "react-icons/fa";
+import { FaHeartbeat, FaComments, FaPlayCircle, FaEnvelope, FaPhone, FaHandshake, FaTelegramPlane } from "react-icons/fa";
 import LText from "@/components/LanguageFriendlyText";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState } from "react";
@@ -203,7 +203,7 @@ const FAQAccordion = () => {
         >
           <button
             onClick={() => setOpenId(openId === idx ? null : idx)}
-            className="w-full p-6 md:p-8 flex items-start justify-between gap-4 text-left hover:bg-white/[0.02] transition-colors"
+            className="w-full p-6 md:p-8 flex items-start justify-between gap-4 text-left hover:bg-white/2 transition-colors"
           >
             <span className="font-black text-white text-sm md:text-base leading-relaxed">
               <LText content={item.question} />
@@ -237,7 +237,7 @@ export default function SupportClient() {
   return (
     <main className="min-h-screen bg-[#030014] text-zinc-100 pt-32 pb-20 px-6 overflow-hidden">
       {/* Decorative Background */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-sky-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-0 right-0 w-125 h-125 bg-sky-500/5 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Hero Section */}
@@ -278,7 +278,7 @@ export default function SupportClient() {
               <motion.div
                 key={idx}
                 variants={fadeInUp}
-                className="p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-sky-500/20 transition-all group cursor-pointer"
+                className="p-8 rounded-4xl bg-white/2 border border-white/5 hover:bg-white/4 hover:border-sky-500/20 transition-all group cursor-pointer"
               >
                 <div className="text-4xl text-sky-500 mb-4 group-hover:scale-110 transition-transform">
                   {category.icon}
@@ -312,81 +312,6 @@ export default function SupportClient() {
           <FAQAccordion />
         </motion.section>
 
-        {/* Resources Section */}
-        <motion.section
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="mb-32"
-        >
-          <h2 className="text-2xl md:text-3xl font-black text-white mb-12 uppercase italic tracking-tighter">
-            {language === "en" && "Learning Resources"}
-            {language === "am" && "የመማር ሙከራዎች"}
-            {language === "si" && "Qabeenya Barumsaa"}
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: <FaBook />,
-                title: {
-                  en: "Documentation",
-                  am: "ሰነድ",
-                  si: "Galmee",
-                },
-                desc: {
-                  en: "Complete guide to using Hawassa Nexus features",
-                  am: "ሀዋሳ ነክሰስ ቅንብር አሠራር ሙሉ መመሪያ",
-                  si: "Hawassa Nexus qabeenya fayyadamuu gabaa guutuu",
-                },
-              },
-              {
-                icon: <FaPlayCircle />,
-                title: {
-                  en: "Video Tutorials",
-                  am: "ቪዲዮ ትምህርቶች",
-                  si: "Barnoota Vidiyoo",
-                },
-                desc: {
-                  en: "Step-by-step video guides for all features",
-                  am: "ሁሉም ቅንብር ለ ደረጃ-በ-ደረጃ ቪዲዮ መመሪያ",
-                  si: "Tarkaanfi-tarkaanfi barnoota vidiyoo qabeenya guutuu",
-                },
-              },
-              {
-                icon: <FaComments />,
-                title: {
-                  en: "Community Forum",
-                  am: "ማህበረሰብ መድረክ",
-                  si: "Foramu Waldaa",
-                },
-                desc: {
-                  en: "Connect with other users and share tips",
-                  am: "ሌሎች ተጠቃሚዎች ጋር ይገናኙ እና ምክሮች ያጋሩ",
-                  si: "Fayyadamtoonni biraa wajjin wal qabii fi tilmaamota kan ragga",
-                },
-              },
-            ].map((resource, idx) => (
-              <motion.div
-                key={idx}
-                variants={fadeInUp}
-                className="p-8 rounded-[2rem] bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/10 hover:border-sky-500/30 transition-all group"
-              >
-                <div className="text-4xl text-sky-500 mb-4 group-hover:text-white transition-colors">
-                  {resource.icon}
-                </div>
-                <h3 className="font-black text-white mb-2 uppercase text-sm">
-                  <LText content={resource.title} />
-                </h3>
-                <p className="text-xs text-zinc-500">
-                  <LText content={resource.desc} />
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-
         {/* Contact Info Cards */}
         <motion.section
           variants={staggerContainer}
@@ -398,7 +323,7 @@ export default function SupportClient() {
           <h2 className="text-2xl md:text-3xl font-black text-white mb-8 uppercase italic tracking-tighter">Contact Info</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {contactCards.map((c, i) => (
-              <motion.div key={i} variants={fadeInUp} className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+              <motion.div key={i} variants={fadeInUp} className="p-6 rounded-2xl bg-white/2 border border-white/5">
                 <h3 className="text-lg font-black text-white mb-2">{c.title}</h3>
                 <p className="text-sm text-zinc-400 mb-3">{c.position}</p>
                 <ul className="space-y-2 text-sm">
@@ -416,7 +341,7 @@ export default function SupportClient() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="bg-gradient-to-r from-sky-500/10 to-sky-500/5 border border-sky-500/20 rounded-[3rem] p-12 md:p-16 text-center"
+          className="bg-linear-to-r from-sky-500/10 to-sky-500/5 border border-sky-500/20 rounded-[3rem] p-12 md:p-16 text-center"
         >
           <h2 className="text-2xl md:text-3xl font-black text-white mb-4 uppercase italic">
             <LText content={content.contactTitle} />

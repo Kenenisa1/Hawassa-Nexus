@@ -170,18 +170,23 @@ export async function updateEvent(id: string, formData: FormData): Promise<Actio
 
         const category = formData.get('category') as IEvent['category'];
         const mode = formData.get('mode') as IEvent['mode'];
-        
+        const s = (k: string) => (formData.get(k) as string)?.trim() || "";
+
         const updateData: Partial<IEvent> = {
-            title: formData.get('title') as string,
+            title: {
+                en: s('title_en'),
+                am: s('title_am'),
+                si: s('title_si'),
+            },
             description: {
-                en: formData.get('desc_en') as string,
-                am: formData.get('desc_am') as string,
-                si: formData.get('desc_si') as string,
+                en: s('desc_en'),
+                am: s('desc_am'),
+                si: s('desc_si'),
             },
             overview: {
-                en: formData.get('overview_en') as string,
-                am: formData.get('overview_am') as string,
-                si: formData.get('overview_si') as string,
+                en: s('overview_en'),
+                am: s('overview_am'),
+                si: s('overview_si'),
             },
             hub: formData.get('hub') as string,
             image: formData.get('image') as string,
@@ -195,7 +200,11 @@ export async function updateEvent(id: string, formData: FormData): Promise<Actio
             organizer: formData.get('organizer') as string,
             price: Number(formData.get('price')) || 0,
             tags: (formData.get('tags') as string || "").split(',').map(t => t.trim()).filter(Boolean),
-            agenda: (formData.get('agenda') as string || "").split('\n').map(l => l.trim()).filter(Boolean),
+            agenda: (formData.get('agenda') as string || "")
+                .split('\n')
+                .map(l => l.trim())
+                .filter(Boolean)
+                .map(line => ({ en: line })),
         };
 
         const updatedEvent = await Event.findByIdAndUpdate(id, updateData, { new: true });

@@ -5,6 +5,7 @@ import {
   FaClock, 
   FaMapMarkerAlt, 
   FaArrowLeft, 
+  FaArrowRight, 
   FaShareAlt, 
   FaTicketAlt,
   FaLayerGroup
@@ -83,7 +84,10 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>;
   const mapQuery = encodeURIComponent(mapTarget);
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${mapQuery}&zoom=15&size=640x320&maptype=roadmap&markers=color:red%7C${mapQuery}${googleMapsApiKey ? `&key=${googleMapsApiKey}` : ""}`;
+  const openStreetMapUrl = `https://staticmap.openstreetmap.de/staticmap.php?center=${mapQuery}&zoom=15&size=640x320&markers=${mapQuery},red-pushpin`;
+  const staticMapUrl = googleMapsApiKey
+    ? `https://maps.googleapis.com/maps/api/staticmap?center=${mapQuery}&zoom=15&size=640x320&maptype=roadmap&markers=color:red%7C${mapQuery}&key=${googleMapsApiKey}`
+    : openStreetMapUrl;
 
   return (
     <div className="min-h-screen bg-[#000000] text-zinc-100 pb-32 selection:bg-sky-500/30">
@@ -97,7 +101,7 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>;
           className="object-cover scale-105 brightness-[0.4] contrast-[1.1]"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/20 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-[#000000] via-[#000000]/20 to-transparent" />
         
         <div className="absolute top-24 left-0 w-full px-6 flex justify-between items-center z-20">
           <Link href="/explore" className="group p-4 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 text-white hover:border-sky-500/50 transition-all">
@@ -136,7 +140,7 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>;
       </div>
 
       {/* 2. MAIN CONTENT GRID */}
-      <main className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 mt-[-60px] relative z-10">
+      <main className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 -mt-15 relative z-10">
         
         <div className="lg:col-span-8 space-y-24">
           
@@ -152,13 +156,13 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>;
                 value: event.price === 0 ? "FREE" : `${event.price} ETB` 
               },
             ].map((item, i) => (
-              <div key={i} className="flex items-center gap-4 p-6 bg-black/60 rounded-[2rem] border border-white/5">
+              <div key={i} className="flex items-center gap-4 p-6 bg-black/60 rounded-4xl border border-white/5">
                 <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-500 text-lg">{item.icon}</div>
                 <div>
                   <p className="text-[9px] uppercase text-zinc-500 font-black tracking-widest leading-none mb-1">
                     <LText content={item.label} />
                   </p>
-                  <div className="text-xs font-bold text-white uppercase italic truncate max-w-[110px]">{item.value}</div>
+                  <div className="text-xs font-bold text-white uppercase italic truncate max-w-27.5">{item.value}</div>
                 </div>
               </div>
             ))}
@@ -170,7 +174,7 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>;
                <h2 className="text-3xl font-black text-white uppercase italic flex items-center gap-4 shrink-0">
                  <HiOutlineInformationCircle className="text-sky-500" /> <LText content={ui.insight} />
                </h2>
-               <div className="h-px w-full bg-gradient-to-r from-white/10 to-transparent" />
+               <div className="h-px w-full bg-linear-to-r from-white/10 to-transparent" />
             </div>
             <div className="text-zinc-400 leading-relaxed text-lg font-medium">
               <LText content={event.overview} />
@@ -180,12 +184,12 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>;
           {/* ... (Visual Gallery & Pulse Sequence remains the same) ... */}
 
           {/* 4. PULSE SEQUENCE (Agenda) */}
-          <section className="relative overflow-hidden bg-white/[0.02] border border-white/5 rounded-[3.5rem] p-12">
+          <section className="relative overflow-hidden bg-white/2 border border-white/5 rounded-[3.5rem] p-12">
             <h2 className="text-2xl font-black text-white uppercase italic mb-12 tracking-widest flex items-center gap-4">
-              <span className="w-8 h-[2px] bg-sky-500" /> <LText content={ui.sequence} />
+              <span className="w-8 h-0.5 bg-sky-500" /> <LText content={ui.sequence} />
             </h2>
             <div className="space-y-12 relative">
-              <div className="absolute left-[11px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-sky-500/50 via-sky-500/10 to-transparent" />
+              <div className="absolute left-2.75 top-2 bottom-2 w-0.5 bg-linear-to-b from-sky-500/50 via-sky-500/10 to-transparent" />
               {event.agenda.map((item, index) => (
                 <div key={index} className="flex gap-12 items-start relative group">
                   <div className="w-6 h-6 rounded-full bg-black border-2 border-sky-500 z-10 shadow-[0_0_15px_rgba(14,165,233,0.4)] group-hover:scale-125 transition-all" />
