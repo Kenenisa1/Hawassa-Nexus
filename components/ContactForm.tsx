@@ -3,10 +3,13 @@
 import { useState } from "react";
 import { sendEmail } from "@/lib/actions/contact.action";
 import { FaPaperPlane, FaCheckCircle, FaExclamationCircle, FaChevronDown } from "react-icons/fa";
+import { useLanguage } from "@/context/LanguageContext";
+import LText from "@/components/LanguageFriendlyText";
 
 const ContactForm = () => {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const { t } = useLanguage();
 
   async function handleSubmit(formData: FormData) {
     setStatus("loading");
@@ -18,11 +21,11 @@ const ContactForm = () => {
         setStatus("success");
       } else {
         setStatus("error");
-        setErrorMessage(result.error || "Something went wrong.");
+        setErrorMessage(result.error || t({ en: "Something went wrong.", am: "ችግር ተከስቷል", si: "Garaqi kalaqamino" }));
       }
     } catch (e) {
       setStatus("error");
-      setErrorMessage("Failed to connect to the server.");
+      setErrorMessage(t({ en: "Failed to connect to the server.", am: "ከሰርቨር ጋር መገናኘት አልተቻለም", si: "Serveru xaada hooggino" }));
     }
   }
 
@@ -32,15 +35,17 @@ const ContactForm = () => {
         <div className="w-20 h-20 bg-sky-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-sky-500/50 shadow-[0_0_20px_rgba(56,189,248,0.3)]">
           <FaCheckCircle className="text-sky-400 text-4xl" />
         </div>
-        <h3 className="text-2xl font-bold text-white mb-2">Message Received</h3>
+        <h3 className="text-2xl font-bold text-white mb-2">
+          <LText content={{ en: "Message Received", am: "መልዕክትዎ ደርሶናል", si: "Sokka Adhino" }} />
+        </h3>
         <p className="text-zinc-400">
-          The Hub has received your inquiry. We&apos;ll be in touch soon.
+          <LText content={{ en: "The Hub has received your inquiry. We'll be in touch soon.", am: "ማዕከሉ ጥያቄዎን ተቀብሏል። በቅርቡ እናገኝዎታለን።", si: "Gidduubba xa'mookki adhino. Muli yanna giddo xaadammokki." }} />
         </p>
         <button 
           onClick={() => setStatus("idle")}
           className="mt-6 text-violet-400 hover:text-violet-300 transition-colors text-sm font-medium underline underline-offset-4"
         >
-          Send another message
+          <LText content={{ en: "Send another message", am: "ሌላ መልዕክት ይላኩ", si: "Wole sokka soki" }} />
         </button>
       </div>
     );
@@ -58,17 +63,21 @@ const ContactForm = () => {
       {/* Row 1: Name & Email */}
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label htmlFor="name" className="text-sm font-semibold text-zinc-300 ml-1">Full Name</label>
+          <label htmlFor="name" className="text-sm font-semibold text-zinc-300 ml-1">
+            <LText content={{ en: "Full Name", am: "ሙሉ ስም", si: "Su'ma" }} />
+          </label>
           <input
             id="name"
             name="name"
             required
-            placeholder="Kenenisa Mieso"
+            placeholder={t({ en: "Kenenisa Mieso", am: "ቀነኒሳ ሚኤሶ", si: "Kenenisa Mieso" })}
             className="w-full px-4 py-3 bg-zinc-950/50 border border-zinc-800 rounded-2xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all hover:border-zinc-700 shadow-inner"
           />
         </div>
         <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-semibold text-zinc-300 ml-1">Email</label>
+          <label htmlFor="email" className="text-sm font-semibold text-zinc-300 ml-1">
+            <LText content={{ en: "Email", am: "ኢሜይል", si: "Imeel" }} />
+          </label>
           <input
             id="email"
             name="email"
@@ -83,7 +92,9 @@ const ContactForm = () => {
       {/* Row 2: Category & Subject (The missing sections) */}
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label htmlFor="category" className="text-sm font-semibold text-zinc-300 ml-1">Inquiry Type</label>
+          <label htmlFor="category" className="text-sm font-semibold text-zinc-300 ml-1">
+            <LText content={{ en: "Inquiry Type", am: "የጥያቄ ዓይነት", si: "Xa'mo Gara" }} />
+          </label>
           <div className="relative">
             <select
               id="category"
@@ -91,34 +102,38 @@ const ContactForm = () => {
               required
               className="w-full px-4 py-3 bg-zinc-950/50 border border-zinc-800 rounded-2xl text-white appearance-none focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all hover:border-zinc-700 cursor-pointer shadow-inner"
             >
-              <option value="general" className="bg-zinc-900">General Inquiry</option>
-              <option value="membership" className="bg-zinc-900">Joining the Hub</option>
-              <option value="partnership" className="bg-zinc-900">Partnership</option>
-              <option value="support" className="bg-zinc-900">Support</option>
+              <option value="general" className="bg-zinc-900">{t({ en: "General Inquiry", am: "አጠቃላይ ጥያቄ", si: "Wo'ma Xa'mo" })}</option>
+              <option value="membership" className="bg-zinc-900">{t({ en: "Joining the Hub", am: "ማዕከሉን መቀላቀል", si: "Gidduubba E'a" })}</option>
+              <option value="partnership" className="bg-zinc-900">{t({ en: "Partnership", am: "አጋርነት", si: "Tuma" })}</option>
+              <option value="support" className="bg-zinc-900">{t({ en: "Support", am: "ድጋፍ", si: "Irko" })}</option>
             </select>
             <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none text-xs" />
           </div>
         </div>
         <div className="space-y-2">
-          <label htmlFor="subject" className="text-sm font-semibold text-zinc-300 ml-1">Subject</label>
+          <label htmlFor="subject" className="text-sm font-semibold text-zinc-300 ml-1">
+            <LText content={{ en: "Subject", am: "ጉዳዩ", si: "Hajo" }} />
+          </label>
           <input
             id="subject"
             name="subject"
             required
-            placeholder="e.g. Workshop Registration"
+            placeholder={t({ en: "e.g. Workshop Registration", am: "ለምሳሌ የስልጠና ምዝገባ", si: "Lawishsha Worshop galcho" })}
             className="w-full px-4 py-3 bg-zinc-950/50 border border-zinc-800 rounded-2xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all hover:border-zinc-700 shadow-inner"
           />
         </div>
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="message" className="text-sm font-semibold text-zinc-300 ml-1">Your Message</label>
+        <label htmlFor="message" className="text-sm font-semibold text-zinc-300 ml-1">
+          <LText content={{ en: "Your Message", am: "መልዕክትዎ", si: "Sokkanki" }} />
+        </label>
         <textarea
           id="message"
           name="message"
           required
           rows={4}
-          placeholder="How can we help?"
+          placeholder={t({ en: "How can we help?", am: "እንዴት ልንረዳዎ እንችላለን?", si: "Hiitto kaa'linohe?" })}
           className="w-full px-4 py-3 bg-zinc-950/50 border border-zinc-800 rounded-2xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition-all hover:border-zinc-700 shadow-inner"
         />
       </div>
@@ -133,7 +148,7 @@ const ContactForm = () => {
             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <>
-              Send Message
+              <LText content={{ en: "Send Message", am: "መልዕክት ላክ", si: "Sokka Soki" }} />
               <FaPaperPlane className="text-xs group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </>
           )}
