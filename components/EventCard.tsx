@@ -9,6 +9,7 @@ import {
   HiArrowRight, 
 } from "react-icons/hi";
 import { useLanguage } from "@/context/LanguageContext";
+import LText from "@/components/LanguageFriendlyText";
 
 // Interface strictly aligned with IEvent model
 interface Props {
@@ -74,12 +75,12 @@ const EventCard = ({
             </div>
             {isToday && (
               <div className="px-3 py-1.5 rounded-xl border border-red-500/30 bg-red-500/10 backdrop-blur-md text-[8px] font-black uppercase tracking-widest text-rose-400 animate-pulse">
-                LIVE
+                <LText content={{ en: "LIVE", am: "ቀጥታ", si: "Kalaq" }} />
               </div>
             )}
             {isFree && (
               <div className="px-3 py-1.5 rounded-xl border border-green-500/20 bg-green-500/10 backdrop-blur-md text-[8px] font-black uppercase tracking-widest text-green-400">
-                Free Access
+                <LText content={{ en: "Free Access", am: "ነጻ መግቢያ", si: "Bilaashsha" }} />
               </div>
             )}
           </div>
@@ -108,14 +109,18 @@ const EventCard = ({
                 <HiCalendar size={16} />
               </div>
               <div className="flex flex-col">
-                <span className="text-[8px] text-zinc-600 font-black uppercase">Date</span>
+                <span className="text-[8px] text-zinc-600 font-black uppercase">
+                  <LText content={{ en: "Date", am: "ቀን", si: "Barra" }} />
+                </span>
                 <span className="text-[11px] text-zinc-300 font-bold">{date}</span>
               </div>
             </div>
 
             <div className="flex items-center gap-2.5 justify-end text-right">
               <div className="flex flex-col">
-                <span className="text-[8px] text-zinc-600 font-black uppercase">Beat</span>
+                <span className="text-[8px] text-zinc-600 font-black uppercase">
+                  <LText content={{ en: "Beat", am: "ሰዓት", si: "Sa'ate" }} />
+                </span>
                 <span className="text-[11px] text-zinc-300 font-bold">{time}</span>
               </div>
               <div className="p-2 rounded-lg bg-white/5 text-zinc-500">
@@ -128,7 +133,9 @@ const EventCard = ({
           {!isFree && price && (
             <div className="mt-4 flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/[0.02] border border-white/5 w-fit">
               <span className="text-[10px] font-bold text-zinc-400 uppercase italic">
-                {price} ETB <span className="text-[8px] opacity-50">Entry</span>
+                {price} <LText content={{ en: "ETB", am: "ብር", si: "Birre" }} /> <span className="text-[8px] opacity-50">
+                  <LText content={{ en: "Entry", am: "መግቢያ", si: "E'o" }} />
+                </span>
               </span>
             </div>
           )}
