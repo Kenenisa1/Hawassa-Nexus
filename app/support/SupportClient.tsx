@@ -199,8 +199,9 @@ const FAQAccordion = () => {
         <motion.div
           key={idx}
           variants={fadeInUp}
-          className="border border-white/10 rounded-2xl overflow-hidden hover:border-sky-500/30 transition-colors"
+          className="group border border-white/10 rounded-3xl overflow-hidden hover:border-sky-500/30 bg-white/2 transition-all shadow-lg relative"
         >
+          <div className="absolute inset-0 bg-gradient-to-r from-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
           <button
             onClick={() => setOpenId(openId === idx ? null : idx)}
             className="w-full p-6 md:p-8 flex items-start justify-between gap-4 text-left hover:bg-white/2 transition-colors"
@@ -278,15 +279,16 @@ export default function SupportClient() {
               <motion.div
                 key={idx}
                 variants={fadeInUp}
-                className="p-8 rounded-4xl bg-white/2 border border-white/5 hover:bg-white/4 hover:border-sky-500/20 transition-all group cursor-pointer"
+                className="relative p-8 rounded-[2.5rem] bg-white/2 border border-white/5 hover:bg-white/5 hover:border-sky-500/30 transition-all group cursor-pointer overflow-hidden shadow-xl"
               >
-                <div className="text-4xl text-sky-500 mb-4 group-hover:scale-110 transition-transform">
+                <div className="absolute inset-0 bg-gradient-to-b from-sky-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="w-16 h-16 rounded-2xl bg-black/50 border border-white/10 flex items-center justify-center text-3xl text-sky-500 mb-6 group-hover:scale-110 group-hover:text-sky-400 transition-all relative z-10 shadow-lg">
                   {category.icon}
                 </div>
-                <h3 className="text-lg font-black text-white mb-3 uppercase">
+                <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tight relative z-10">
                   <LText content={category.title} />
                 </h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">
+                <p className="text-sm text-zinc-400 leading-relaxed font-medium relative z-10">
                   <LText content={category.description} />
                 </p>
               </motion.div>
@@ -323,13 +325,14 @@ export default function SupportClient() {
           <h2 className="text-2xl md:text-3xl font-black text-white mb-8 uppercase italic tracking-tighter">Contact Info</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {contactCards.map((c, i) => (
-              <motion.div key={i} variants={fadeInUp} className="p-6 rounded-2xl bg-white/2 border border-white/5">
-                <h3 className="text-lg font-black text-white mb-2">{c.title}</h3>
-                <p className="text-sm text-zinc-400 mb-3">{c.position}</p>
-                <ul className="space-y-2 text-sm">
-                  <li className="text-zinc-300"><FaPhone className="inline mr-2 text-sky-500" /> {c.phone}</li>
-                  <li className="text-zinc-300"><FaEnvelope className="inline mr-2 text-sky-500" /> {c.email}</li>
-                  <li className="text-zinc-300"><FaTelegramPlane className="inline mr-2 text-sky-500" /> {c.tg}</li>
+              <motion.div key={i} variants={fadeInUp} className="group p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-sky-500/30 transition-all relative overflow-hidden cursor-pointer shadow-2xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <h3 className="text-xl font-black text-white mb-2 relative z-10">{c.title}</h3>
+                <p className="text-xs font-black text-sky-400 uppercase tracking-widest mb-6 relative z-10">{c.position}</p>
+                <ul className="space-y-4 text-sm relative z-10">
+                  <li className="flex items-center text-zinc-300 group-hover:text-white transition-colors"><div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center mr-3"><FaPhone className="text-sky-500" /></div> {c.phone}</li>
+                  <li className="flex items-center text-zinc-300 group-hover:text-white transition-colors"><div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center mr-3"><FaEnvelope className="text-sky-500" /></div> {c.email}</li>
+                  <li className="flex items-center text-zinc-300 group-hover:text-white transition-colors"><div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center mr-3"><FaTelegramPlane className="text-sky-500" /></div> {c.tg}</li>
                 </ul>
               </motion.div>
             ))}
