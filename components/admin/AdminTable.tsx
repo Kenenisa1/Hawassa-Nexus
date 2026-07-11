@@ -91,8 +91,8 @@ const AdminTable = ({ events }: AdminTableProps) => {
         setLocalEvents((prev) =>
           prev.filter((e) => String(e._id) !== deleteId),
         );
-        toast.success("Pulse Erased", {
-          description: "The event has been permanently removed from the grid.",
+        toast.success("Event Deleted", {
+          description: "The event has been permanently removed from the system.",
           icon: <MdDeleteSweep className="text-sky-500" size={20} />,
         });
       } else {
@@ -118,7 +118,7 @@ const AdminTable = ({ events }: AdminTableProps) => {
           />
           <input
             type="text"
-            placeholder="Search pulses by title or category..."
+            placeholder="Search events by title or category..."
             className="w-full bg-black border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-xs text-white outline-none focus:border-sky-500 transition-all"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -126,7 +126,7 @@ const AdminTable = ({ events }: AdminTableProps) => {
         <div className="flex gap-6 px-4">
           <div className="text-center">
             <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">
-              Active Pulses
+              Active Events
             </p>
             <p className="text-xl font-black text-sky-500">
               {localEvents.length}
@@ -140,7 +140,7 @@ const AdminTable = ({ events }: AdminTableProps) => {
           <thead>
             <tr className="border-b border-white/5 bg-white/2">
               <th className="p-6 text-[10px] font-black text-zinc-500 uppercase tracking-widest">
-                Pulse Identity
+                Event Name
               </th>
               <th className="p-6 text-[10px] font-black text-zinc-500 uppercase tracking-widest">
                 Category & Mode
@@ -232,7 +232,7 @@ const AdminTable = ({ events }: AdminTableProps) => {
                             </div>
                             <div>
                               <h4 className="text-[11px] font-black text-white uppercase tracking-widest italic">
-                                Confirm Erasure
+                                Confirm Deletion
                               </h4>
                               <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-tighter">
                                 Action is irreversible
@@ -240,7 +240,7 @@ const AdminTable = ({ events }: AdminTableProps) => {
                             </div>
                           </div>
                           <p className="text-[10px] text-zinc-400 leading-relaxed font-medium px-1">
-                            Are you sure you want to delete <span className="text-white font-bold italic">{displayTitle}</span>? This will wipe all associated data from the pulse grid.
+                            Are you sure you want to delete <span className="text-white font-bold italic">{displayTitle}</span>? This will permanently remove the event from the system.
                           </p>
                           <div className="flex gap-2">
                             <button
@@ -254,7 +254,7 @@ const AdminTable = ({ events }: AdminTableProps) => {
                               disabled={isDeleting}
                               className="flex-1 py-3 rounded-xl bg-red-500 text-black text-[9px] font-black uppercase hover:bg-red-400 transition-all active:scale-95 shadow-[0_0_15px_rgba(239,68,68,0.3)] disabled:opacity-50"
                             >
-                              {isDeleting ? "Erasing..." : "Delete Pulse"}
+                              {isDeleting ? "Deleting..." : "Delete Event"}
                             </button>
                           </div>
                         </div>

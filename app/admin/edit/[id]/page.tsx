@@ -3,33 +3,32 @@ import { getEventById } from "@/lib/actions/event.actions";
 import { notFound } from "next/navigation";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const EditEventPage = async ({ params }: Props) => {
-  // Await the params in Next.js 15+
-  const { id } = await params; 
-  
+  const { id } = await params;
   const event = await getEventById(id);
 
-  if (!event) {
-    return notFound(); // Triggers the default Next.js 404 page
-  }
+  if (!event) return notFound();
 
   return (
-    <main className="min-h-screen bg-black py-20 px-6">
-      <div className="max-w-5xl mx-auto">
-        <header className="mb-12">
-          <h1 className="text-5xl font-black text-white italic tracking-tighter uppercase">
-            Edit Pulse
+    <main className="min-h-screen bg-[#030014] pt-28 pb-24 px-4 md:px-10">
+      <div className="max-w-7xl mx-auto">
+        {/* Page Header */}
+        <header className="mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-black uppercase tracking-widest mb-5">
+            <span>✏️</span>
+            Editing Event
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black text-white italic tracking-tighter uppercase leading-tight">
+            Edit <span className="text-sky-500">Pulse</span>
           </h1>
-          <div className="h-1 w-20 bg-sky-500 mt-4 rounded-full" />
-          <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mt-6">
-            Database Entry: <span className="text-sky-500">{id}</span>
+          <p className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.25em] mt-3">
+            ID: <span className="text-sky-500/60">{id}</span>
           </p>
         </header>
 
-        {/* The refined form we just built */}
         <EventForm initialData={event} type="Update" />
       </div>
     </main>

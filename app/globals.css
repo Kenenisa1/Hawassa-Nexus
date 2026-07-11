@@ -27,7 +27,7 @@
   --animate-float: float 6s ease-in-out infinite;
 
   /* 4. Font Families */
-  --font-sans: var(--font-roboto-slab), serif;
+  --font-sans: var(--font-outfit), sans-serif;
   --font-display: var(--font-bungee), sans-serif;
   --font-mono: var(--font-mono), monospace;
 }
@@ -43,7 +43,7 @@
 }
 
 body {
-  font-family: var(--font-roboto-slab), serif;
+  font-family: var(--font-outfit), sans-serif;
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
   /* Premium Mesh Gradient for Hawassa Pulse */

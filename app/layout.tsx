@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bungee, Roboto_Slab, JetBrains_Mono } from "next/font/google";
+import { Bungee, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import ConditionalNavbar from "@/components/ConditionalNavbar";
 import ConditionalFooter from "@/components/ConditionalFooter";
@@ -19,8 +19,8 @@ const bungee = Bungee({
   adjustFontFallback: false,
 });
 
-const robotoSlab = Roboto_Slab({
-  variable: "--font-roboto-slab",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
   display: "swap",
   fallback: ["system-ui", "arial"],
@@ -49,7 +49,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${robotoSlab.variable} ${bungee.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${outfit.variable} ${bungee.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

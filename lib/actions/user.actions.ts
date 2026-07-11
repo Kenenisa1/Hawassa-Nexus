@@ -125,3 +125,26 @@ export async function updateReputation(userId: string, points: number) {
     console.error("Reputation sync error:", error);
   }
 }
+
+export async function getAllUsers() {
+  try {
+    await connectToDatabase();
+    const users = await User.find({}).sort({ joinedAt: -1 }).lean();
+    return JSON.parse(JSON.stringify(users));
+  } catch (error) {
+    console.error("Error fetching all users:", error);
+    return [];
+  }
+}
+
+export async function updateUserRole(userId: string, role: "user" | "organizer" | "admin") {
+  try {
+    await connectToDatabase();
+    const updatedUser = await User.findByIdAndUpdate(userId, { role }, { new: true });
+    if (!updatedUser) return { success: false, message: "User not found" };
+    return { success: true, message: `User role updated to ${role} successfully!` };
+  } catch (error: any) {
+    console.error("Error updating user role:", error);
+    return { success: false, message: error.message || "Failed to update role" };
+  }
+}
