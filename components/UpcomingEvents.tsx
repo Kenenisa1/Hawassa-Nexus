@@ -94,17 +94,17 @@ const EventSlide = ({ event, direction }: { event: IEvent; direction: number }) 
             </span>
             {isToday && (
               <span className="px-3 py-1 rounded-xl border border-rose-500/30 bg-rose-500/10 text-[9px] font-black uppercase tracking-widest text-rose-400 backdrop-blur-md animate-pulse">
-                LIVE NOW
+                <LText content={{ en: "LIVE NOW", am: "ቀጥታ አሁን", si: "Kalaq xaa'a" }} />
               </span>
             )}
             {event.isFeatured && (
               <span className="px-3 py-1 rounded-xl border border-amber-500/30 bg-amber-500/10 text-[9px] font-black uppercase tracking-widest text-amber-400 backdrop-blur-md">
-                Featured
+                <LText content={{ en: "Featured", am: "ልዩ", si: "Baxxe" }} />
               </span>
             )}
             {(event.price === 0) && (
               <span className="px-3 py-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-[9px] font-black uppercase tracking-widest text-emerald-400 backdrop-blur-md">
-                Free
+                <LText content={{ en: "Free", am: "ነጻ", si: "Bilaashsha" }} />
               </span>
             )}
           </div>
@@ -135,13 +135,15 @@ const EventSlide = ({ event, direction }: { event: IEvent; direction: number }) 
             {/* Countdown chips */}
             {isUpcoming && (
               <div className="flex items-center gap-2">
-                <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mr-1">In</span>
+                <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mr-1">
+                  <LText content={{ en: "In", am: "በ", si: "Giddo" }} />
+                </span>
                 {[
-                  { label: "d", value: countdown.days },
-                  { label: "h", value: countdown.hours },
-                  { label: "m", value: countdown.minutes },
-                ].map(({ label, value }) => (
-                  <div key={label} className="flex flex-col items-center px-3 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md min-w-[48px]">
+                  { label: { en: "d", am: "ቀ", si: "b" }, value: countdown.days },
+                  { label: { en: "h", am: "ሰ", si: "s" }, value: countdown.hours },
+                  { label: { en: "m", am: "ደ", si: "d" }, value: countdown.minutes },
+                ].map(({ label, value }, idx) => (
+                  <div key={idx} className="flex flex-col items-center px-3 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md min-w-[48px]">
                     <AnimatePresence mode="wait">
                       <motion.span
                         key={value}
@@ -154,7 +156,9 @@ const EventSlide = ({ event, direction }: { event: IEvent; direction: number }) 
                         {String(value).padStart(2, "0")}
                       </motion.span>
                     </AnimatePresence>
-                    <span className="text-[8px] text-zinc-500 font-black uppercase mt-0.5">{label}</span>
+                    <span className="text-[8px] text-zinc-500 font-black uppercase mt-0.5">
+                      <LText content={label} />
+                    </span>
                   </div>
                 ))}
               </div>
@@ -162,7 +166,7 @@ const EventSlide = ({ event, direction }: { event: IEvent; direction: number }) 
 
             {/* CTA arrow */}
             <div className="ml-auto flex items-center gap-2 text-sky-400 text-[11px] font-black uppercase tracking-widest group-hover:gap-3 transition-all duration-300">
-              View Event
+              <LText content={{ en: "View Event", am: "ዝግጅቱን ይመልከቱ", si: "La'i" }} />
               <div className="w-9 h-9 rounded-full border border-sky-500/40 bg-sky-500/10 flex items-center justify-center group-hover:bg-sky-500 group-hover:border-sky-500 transition-all duration-300">
                 <HiArrowRight className="group-hover:translate-x-0.5 transition-transform" size={16} />
               </div>
