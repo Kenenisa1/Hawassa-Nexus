@@ -26,29 +26,29 @@ export default function ContactPage() {
             </p>
           </div>
 
-          {/* Contact Details Grid */}
-          <div className="space-y-8">
-            <div className="group flex items-start gap-6">
-              <div className="w-12 h-12 shrink-0 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-sky-500 group-hover:border-sky-500/50 transition-all">
-                <FaMapMarkerAlt />
+          {/* Contact Details Cards */}
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="group p-6 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-sky-500/30 transition-all cursor-pointer relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-12 h-12 mb-6 rounded-2xl bg-black/50 border border-white/5 flex items-center justify-center text-sky-500 group-hover:scale-110 transition-transform shadow-xl">
+                <FaMapMarkerAlt size={20} />
               </div>
-              <div>
-                <h4 className="text-white font-black text-xs uppercase tracking-widest mb-1">HQ Location</h4>
-                <p className="text-zinc-500 text-sm font-medium leading-relaxed">
-                  Hawassa City Center,<br />
-                  Southern Ethiopia
-                </p>
-              </div>
+              <h4 className="text-white font-black text-xs uppercase tracking-widest mb-2 relative z-10">HQ Location</h4>
+              <p className="text-zinc-400 text-sm font-medium leading-relaxed relative z-10">
+                Hawassa City Center,<br />
+                Southern Ethiopia
+              </p>
             </div>
 
-            <div className="group flex items-start gap-6">
-              <div className="w-12 h-12 shrink-0 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-sky-500 group-hover:border-sky-500/50 transition-all">
-                <FaEnvelope />
+            <div className="group p-6 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-sky-500/30 transition-all cursor-pointer relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-12 h-12 mb-6 rounded-2xl bg-black/50 border border-white/5 flex items-center justify-center text-sky-500 group-hover:scale-110 transition-transform shadow-xl">
+                <FaEnvelope size={20} />
               </div>
-              <div>
-                <h4 className="text-white font-black text-xs uppercase tracking-widest mb-1">Digital Inbox</h4>
-                <p className="text-zinc-500 text-sm font-medium">hello@hawassapulse.com</p>
-              </div>
+              <h4 className="text-white font-black text-xs uppercase tracking-widest mb-2 relative z-10">Digital Inbox</h4>
+              <p className="text-zinc-400 text-sm font-medium relative z-10">
+                hello@hawassapulse.com
+              </p>
             </div>
           </div>
 
