@@ -15,18 +15,24 @@ const bungee = Bungee({
   variable: "--font-bungee",
   subsets: ["latin"],
   display: "swap",
+  fallback: ["system-ui", "arial"],
+  adjustFontFallback: false,
 });
 
 const robotoSlab = Roboto_Slab({
   variable: "--font-roboto-slab",
   subsets: ["latin"],
   display: "swap",
+  fallback: ["system-ui", "arial"],
+  adjustFontFallback: false,
 });
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
   display: "swap",
+  fallback: ["system-ui", "arial"],
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
