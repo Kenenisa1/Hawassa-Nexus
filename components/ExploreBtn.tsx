@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { HiArrowRight } from "react-icons/hi2";
+import LText from "@/components/LanguageFriendlyText";
 
 const ExploreBtn = () => { 
   return (
@@ -15,7 +16,7 @@ const ExploreBtn = () => {
       >
         {/* Dynamic Text */}
         <span className="font-sans text-lg font-bold tracking-tight">
-          Discover Events
+          <LText content={{ en: "Discover Events", am: "ኩነቶችን ያግኙ", si: "Woyitoota La'i" }} />
         </span>
         
         {/* Animated Icon Circle */}
