@@ -459,30 +459,6 @@ const EventForm = ({ initialData, type }: EventFormProps) => {
                   ))}
                 </div>
               </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isPending}
-                className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-sky-500 hover:bg-sky-400 text-black text-xs font-black uppercase tracking-widest transition-all shadow-xl shadow-sky-500/20 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98]"
-              >
-                {isPending ? (
-                  <>
-                    <MdAutorenew size={18} className="animate-spin" />
-                    Deploying...
-                  </>
-                ) : type === "Create" ? (
-                  <>
-                    <MdRocketLaunch size={18} />
-                    Deploy Event
-                  </>
-                ) : (
-                  <>
-                    <MdCheckCircle size={18} />
-                    Save Changes
-                  </>
-                )}
-              </button>
             </div>
 
             {/* Date & Time */}
@@ -647,6 +623,30 @@ const EventForm = ({ initialData, type }: EventFormProps) => {
                 />
               </div>
             </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isPending}
+              className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-sky-500 hover:bg-sky-400 text-black text-xs font-black uppercase tracking-widest transition-all shadow-xl shadow-sky-500/20 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98]"
+            >
+              {isPending ? (
+                <>
+                  <MdAutorenew size={18} className="animate-spin" />
+                  Deploying...
+                </>
+              ) : type === "Create" ? (
+                <>
+                  <MdRocketLaunch size={18} />
+                  Deploy Event
+                </>
+              ) : (
+                <>
+                  <MdCheckCircle size={18} />
+                  Save Changes
+                </>
+              )}
+            </button>
 
           </aside>
         </div>
