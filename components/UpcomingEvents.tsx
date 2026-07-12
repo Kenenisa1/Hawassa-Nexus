@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { HiCalendar, HiLocationMarker, HiArrowRight, HiArrowLeft, HiClock } from "react-icons/hi";
-import type { IEvent } from "@/database";
+import type { IEvent } from "@/types";
 import LText from "@/components/LanguageFriendlyText";
 
 interface Props {
@@ -57,7 +57,8 @@ const EVENTS_PER_PAGE = 1;
 /* ───────────────────────── Single slide card ───────────────────────── */
 const EventSlide = ({ event, direction }: { event: IEvent; direction: number }) => {
   const countdown = useCountdown(event.date);
-  const isUpcoming = new Date(event.date).getTime() > Date.now();
+  const now = useRef(Date.now()).current;
+  const isUpcoming = new Date(event.date).getTime() > now;
   const isToday = new Date(event.date).toDateString() === new Date().toDateString();
 
   return (
@@ -216,10 +217,11 @@ const PaginationDots = ({
 /* ───────────────────────── Main section ───────────────────────── */
 const UpcomingEvents = ({ events }: Props) => {
   // Filter to upcoming/published events only, sorted by date ascending
+  const now = useRef(Date.now()).current;
   const upcoming = (events || [])
     .filter((e) => {
       const d = new Date(e.date).getTime();
-      return d >= Date.now() - 86400000; // allow events from today
+      return d >= now - 86400000; // allow events from today
     })
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, 8); // cap at 8

@@ -3,6 +3,7 @@
 import connectToDatabase from "@/lib/mongodb";
 import Subscriber from "@/database/subscriber.model";
 import { Resend } from "resend";
+import { createSystemLog } from "@/lib/actions/log.actions";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_mock_key");
 
@@ -63,12 +64,21 @@ export async function broadcastAlert(subject: string, content: string) {
           </div>
         `,
       });
+      await createSystemLog({
+        action: "Broadcast Sent",
+        description: `Alert "${subject}" was sent to ${emails.length} subscribers.`,
+        type: "success",
+      });
       return { success: true, message: `Successfully broadcasted to ${emails.length} subscribers via Resend!` };
     } else {
-      // Mock mode
+      // Mock mode - no RESEND_API_KEY set
       console.log(`[MOCK BROADCAST] Sent to ${emails.length} subscribers. Subject: ${subject}`);
-      // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 800));
+      await createSystemLog({
+        action: "Broadcast Simulated",
+        description: `Alert "${subject}" was simulated for ${emails.length} subscribers (no API key).`,
+        type: "info",
+      });
       return { success: true, isMock: true, message: `Simulated broadcast completed successfully to ${emails.length} subscribers!` };
     }
   } catch (error: any) {

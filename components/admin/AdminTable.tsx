@@ -12,7 +12,7 @@ import {
   MdOpenInNew,
   MdWarning,
 } from "react-icons/md";
-import type { IEvent } from "@/database/event.model";
+import type { IEvent } from "@/types";
 import { toast } from "sonner";
 
 interface AdminTableProps {
@@ -28,11 +28,13 @@ const AdminTable = ({ events }: AdminTableProps) => {
   const ITEMS_PER_PAGE = 7;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
   }, [searchTerm, localEvents]);
 
   useEffect(() => {
     if (Array.isArray(events)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalEvents(events);
     }
   }, [events]);
@@ -65,8 +67,6 @@ const AdminTable = ({ events }: AdminTableProps) => {
     let resolvedCategory: string = "";
     if (typeof event?.category === 'string') {
       resolvedCategory = event.category;
-    } else if (event?.category && typeof event.category === 'object' && 'en' in event.category) {
-      resolvedCategory = (event.category as any).en || "";
     }
     const category = resolvedCategory.toLowerCase();
     
@@ -98,7 +98,7 @@ const AdminTable = ({ events }: AdminTableProps) => {
       } else {
         toast.error("Operation Failed", { description: result.message });
       }
-    } catch (err) {
+    } catch {
       toast.error("System Error", {
         description: "Could not sync with the database.",
       });
@@ -156,7 +156,7 @@ const AdminTable = ({ events }: AdminTableProps) => {
           <tbody className="divide-y divide-white/5">
             {paginatedEvents.map((event) => {
               // Resolved title for display
-              const displayTitle = typeof event.title === 'string' ? event.title : (typeof event.title === 'object' && 'en' in event.title ? (event.title as any).en : "Unknown");
+              const displayTitle = typeof event.title === 'object' ? event.title.en : (event.title || "Unknown");
 
               return (
                 <tr
@@ -186,10 +186,10 @@ const AdminTable = ({ events }: AdminTableProps) => {
                   <td className="p-6">
                     <div className="flex flex-col gap-1">
                       <span className="text-[10px] font-black text-sky-500/80 uppercase bg-sky-500/5 border border-sky-500/10 px-2 py-0.5 rounded-md w-fit">
-                        {typeof event.category === 'string' ? event.category : (typeof event.category === 'object' && 'en' in event.category ? (event.category as any).en : "Unknown")}
+                        {event.category}
                       </span>
                       <span className="text-[10px] font-bold text-zinc-500 uppercase px-2">
-                        {typeof event.mode === 'string' ? event.mode : (typeof event.mode === 'object' && 'en' in event.mode ? (event.mode as any).en : "Unknown")}
+                        {event.mode}
                       </span>
                     </div>
                   </td>

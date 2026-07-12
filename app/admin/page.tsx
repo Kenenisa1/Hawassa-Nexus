@@ -18,13 +18,14 @@ import {
 } from "react-icons/md";
 import AdminTable from "@/components/admin/AdminTable";
 import { getAllEvents } from "@/lib/actions/event.actions";
-import { getAllBookings, deleteBooking } from "@/lib/actions/booking.action";
+import { getAllBookings, deleteBooking, verifyBookingPayment, rejectBookingPayment } from "@/lib/actions/booking.action";
 import { getAllContacts, updateContactStatus, deleteContact } from "@/lib/actions/contact.action";
 import { getAllSubscribers, deleteSubscriber, broadcastAlert } from "@/lib/actions/subscriber.action";
 import { getAllUsers, updateUserRole } from "@/lib/actions/user.actions";
+import { getSystemLogs } from "@/lib/actions/log.actions";
 import { useLanguage } from "@/context/LanguageContext";
 import LText from "@/components/LanguageFriendlyText";
-import type { IEvent } from "@/database/event.model";
+import type { IEvent, IBooking, IContact, ISubscriber, IUser, ISystemLog } from "@/types";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -53,10 +54,11 @@ const AdminDashboard = () => {
 
   // --- DATA REGISTRY STATES ---
   const [events, setEvents] = useState<IEvent[]>([]);
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [contacts, setContacts] = useState<any[]>([]);
-  const [subscribers, setSubscribers] = useState<any[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<IBooking[]>([]);
+  const [contacts, setContacts] = useState<IContact[]>([]);
+  const [subscribers, setSubscribers] = useState<ISubscriber[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [systemLogs, setSystemLogs] = useState<ISystemLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // --- BROADCAST STATE ENGINE ---
@@ -65,7 +67,7 @@ const AdminDashboard = () => {
   const [isBroadcasting, setIsBroadcasting] = useState(false);
 
   // --- MODERATION SELECTION STAGE ---
-  const [selectedMessage, setSelectedMessage] = useState<any>(null);
+  const [selectedMessage, setSelectedMessage] = useState<IContact | null>(null);
   const [moderationCategoryFilter, setModerationCategoryFilter] = useState<string>("all");
 
   // --- SYSTEM MOCK CONFIG CONFIGURATION ---
@@ -79,18 +81,20 @@ const AdminDashboard = () => {
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [eventsData, bookingsData, contactsData, subscribersData, usersData] = await Promise.all([
+      const [eventsData, bookingsData, contactsData, subscribersData, usersData, logsData] = await Promise.all([
         getAllEvents(),
         getAllBookings(),
         getAllContacts(),
         getAllSubscribers(),
         getAllUsers(),
+        getSystemLogs(50),
       ]);
       setEvents(eventsData);
       setBookings(bookingsData);
       setContacts(contactsData);
       setSubscribers(subscribersData);
       setUsers(usersData);
+      setSystemLogs(logsData);
     } catch (error) {
       console.error("[SYSTEM ERROR] Failed to sync registry databases:", error);
       toast.error("Registry Sync Failed", {
@@ -105,12 +109,14 @@ const AdminDashboard = () => {
     fetchData();
     window.addEventListener('focus', fetchData);
     return () => window.removeEventListener('focus', fetchData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchData]);
 
   // Load saved rate limiter mode on mount
   useEffect(() => {
     const savedRateLimit = localStorage.getItem("nexus_rate_limiter_mode");
     if (savedRateLimit) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRateLimiterMode(savedRateLimit);
     }
   }, []);
@@ -125,6 +131,36 @@ const AdminDashboard = () => {
         toast.success("Pass Revoked", { description: "The ticket entry was deleted successfully." });
       } else {
         toast.error("Revocation Failed", { description: res.message });
+      }
+    } catch {
+      toast.error("Database Connection Failure");
+    }
+  };
+
+  // --- VERIFY PAYMENT PROTOCOL ---
+  const handleVerifyPayment = async (id: string) => {
+    try {
+      const res = await verifyBookingPayment(id);
+      if (res.success) {
+        setBookings(prev => prev.map(b => b._id === id ? { ...b, paymentStatus: "verified" } : b));
+        toast.success("Payment Verified", { description: "Booking has been confirmed." });
+      } else {
+        toast.error("Verification Failed", { description: res.message });
+      }
+    } catch {
+      toast.error("Database Connection Failure");
+    }
+  };
+
+  // --- REJECT PAYMENT PROTOCOL ---
+  const handleRejectPayment = async (id: string) => {
+    try {
+      const res = await rejectBookingPayment(id);
+      if (res.success) {
+        setBookings(prev => prev.map(b => b._id === id ? { ...b, paymentStatus: "failed" } : b));
+        toast.warning("Payment Rejected", { description: "Booking marked as failed." });
+      } else {
+        toast.error("Rejection Failed", { description: res.message });
       }
     } catch {
       toast.error("Database Connection Failure");
@@ -658,58 +694,86 @@ const AdminDashboard = () => {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-white/5 bg-white/2">
-                      <th className="p-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest">
-                        Subscriber Email
-                      </th>
-                      <th className="p-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest">
-                        Event Target
-                      </th>
-                      <th className="p-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest">
-                        Registry Date
-                      </th>
-                      <th className="p-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest text-center">
-                        Operation
-                      </th>
+                      <th className="p-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest">Email</th>
+                      <th className="p-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest">Event</th>
+                      <th className="p-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest text-center">Tickets</th>
+                      <th className="p-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest text-center">Amount</th>
+                      <th className="p-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest text-center">Payment</th>
+                      <th className="p-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5 text-xs">
                     {bookings.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="p-10 text-center text-zinc-600 font-bold uppercase tracking-widest text-[10px]">
+                        <td colSpan={6} className="p-10 text-center text-zinc-600 font-bold uppercase tracking-widest text-[10px]">
                           No tickets sold yet
                         </td>
                       </tr>
                     ) : (
                       bookings.map((booking) => {
-                        const eventTitle = booking.eventId && typeof booking.eventId === 'object' 
-                          ? (booking.eventId.title?.en || "Referenced Pulse") 
-                          : "Pulse Event";
+                        const eventTitle = booking.eventId && typeof booking.eventId === 'object'
+                          ? ((booking.eventId as { title?: { en?: string } }).title?.en || "Referenced Event")
+                          : "Event";
+                        const statusColors: Record<string, string> = {
+                          free: "bg-zinc-700/50 text-zinc-300",
+                          pending: "bg-amber-500/20 text-amber-400 border border-amber-500/30",
+                          verified: "bg-green-500/20 text-green-400 border border-green-500/30",
+                          failed: "bg-red-500/20 text-red-400 border border-red-500/30",
+                        };
                         return (
-                          <tr key={booking._id} className="hover:bg-white/1 transition-colors">
-                            <td className="p-5 text-white font-medium">{booking.email}</td>
+                          <tr key={booking._id} className="hover:bg-white/[0.015] transition-colors">
+                            <td className="p-5 text-white font-medium">
+                              <div>{booking.email}</div>
+                              {booking.txReference && (
+                                <div className="text-[9px] font-mono text-zinc-600 mt-0.5">Ref: {booking.txReference}</div>
+                              )}
+                            </td>
                             <td className="p-5">
                               <span className="text-sky-400 font-bold">{eventTitle}</span>
-                              <p className="text-[8px] font-mono text-zinc-600 uppercase mt-0.5">
-                                ID: {booking.eventId?._id || booking.eventId || "N/A"}
-                              </p>
                             </td>
-                            <td className="p-5 text-zinc-400">
-                              {new Date(booking.createdAt).toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit"
-                              })}
+                            <td className="p-5 text-center text-zinc-300 font-bold">
+                              {booking.ticketsCount ?? 1}
+                            </td>
+                            <td className="p-5 text-center font-black">
+                              {booking.totalAmount > 0 ? (
+                                <span className="text-green-400">{booking.totalAmount.toLocaleString()} ETB</span>
+                              ) : (
+                                <span className="text-zinc-500">Free</span>
+                              )}
                             </td>
                             <td className="p-5 text-center">
-                              <button
-                                onClick={() => handleCancelBooking(booking._id)}
-                                className="p-2 bg-red-500/10 hover:bg-red-500 hover:text-black rounded-lg text-red-500 transition-all"
-                                title="Cancel Ticket Pass"
-                              >
-                                <MdDelete size={16} />
-                              </button>
+                              <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${statusColors[booking.paymentStatus ?? 'free'] ?? ''}`}>
+                                {booking.paymentStatus ?? "free"}
+                              </span>
+                            </td>
+                            <td className="p-5">
+                              <div className="flex items-center justify-center gap-2">
+                                {booking.paymentStatus === "pending" && (
+                                  <>
+                                    <button
+                                      onClick={() => handleVerifyPayment(booking._id)}
+                                      className="px-3 py-1.5 bg-green-500/10 hover:bg-green-500 hover:text-black rounded-lg text-green-400 transition-all text-[9px] font-black uppercase tracking-widest"
+                                      title="Verify Payment"
+                                    >
+                                      ✓ Verify
+                                    </button>
+                                    <button
+                                      onClick={() => handleRejectPayment(booking._id)}
+                                      className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500 hover:text-black rounded-lg text-red-400 transition-all text-[9px] font-black uppercase tracking-widest"
+                                      title="Reject Payment"
+                                    >
+                                      ✗ Reject
+                                    </button>
+                                  </>
+                                )}
+                                <button
+                                  onClick={() => handleCancelBooking(booking._id)}
+                                  className="p-2 bg-red-500/5 hover:bg-red-500/20 rounded-lg text-red-500/60 hover:text-red-400 transition-all"
+                                  title="Delete Booking"
+                                >
+                                  <MdDelete size={14} />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -1047,12 +1111,27 @@ const AdminDashboard = () => {
                     </p>
                   </div>
 
-                  <div className="bg-black border border-white/5 rounded-xl p-4 font-mono text-[9px] text-sky-500/80 space-y-1.5 h-44 overflow-y-auto leading-relaxed select-all">
-                    <p>[10:48:02] INFO: Cluster client pool updated.</p>
-                    <p>[10:47:12] AUTH: Token token validated successfully.</p>
-                    <p>[10:44:03] SYNC: Synchronized event registry.</p>
-                    <p>[10:38:12] SECURITY: Node_1 firewall state updated.</p>
-                    <p>[10:30:45] API: Route /api/events responded in 24ms.</p>
+                  <div className="bg-black border border-white/5 rounded-xl p-4 font-mono text-[9px] space-y-1.5 h-44 overflow-y-auto leading-relaxed">
+                    {systemLogs.length === 0 ? (
+                      <p className="text-zinc-600 text-center py-6">No system logs yet. Actions like deleting events or sending broadcasts will appear here.</p>
+                    ) : (
+                      systemLogs.map((log) => {
+                        const colors: Record<string, string> = {
+                          info: "text-sky-400/80",
+                          success: "text-green-400/80",
+                          warning: "text-amber-400/80",
+                          error: "text-red-400/80",
+                        };
+                        const ts = new Date(log.createdAt).toLocaleTimeString("en-ET", {
+                          hour: "2-digit", minute: "2-digit", second: "2-digit",
+                        });
+                        return (
+                          <p key={log._id} className={colors[log.type] || "text-zinc-400"}>
+                            [{ts}] {log.type.toUpperCase()}: {log.description}
+                          </p>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
               </div>

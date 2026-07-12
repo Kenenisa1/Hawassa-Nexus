@@ -25,12 +25,22 @@ import {
   MdEdit,
 } from "react-icons/md";
 import Image from "next/image";
-import { IEvent } from "@/database/event.model";
+import type { IEvent } from "@/types";
 
 interface EventFormProps {
   initialData?: IEvent;
   type: "Create" | "Update";
 }
+
+type FormState = {
+  title_en: string; title_am: string; title_si: string;
+  desc_en: string; desc_am: string; desc_si: string;
+  overview_en: string; overview_am: string; overview_si: string;
+  agenda: string; tags: string;
+  date: string; time: string; mode: string; category: string;
+  status: string; hub: string; venue: string; location: string;
+  audience: string; organizer: string; price: number; totalCapacity: number;
+};
 
 const CATEGORIES = ["Technology", "Culture", "Business", "Sports"] as const;
 const MODES = ["offline", "online", "hybrid"] as const;
@@ -54,7 +64,7 @@ const EventForm = ({ initialData, type }: EventFormProps) => {
   } | null>(null);
   const router = useRouter();
 
-  const [formState, setFormState] = useState({
+  const [formState, setFormState] = useState<FormState>({
     title_en: initialData?.title?.en || "",
     title_am: initialData?.title?.am || "",
     title_si: initialData?.title?.si || "",
@@ -93,8 +103,8 @@ const EventForm = ({ initialData, type }: EventFormProps) => {
   };
 
   const handleUpload = () => {
-    if (typeof window !== "undefined" && (window as any).cloudinary) {
-      (window as any).cloudinary
+    if (typeof window !== "undefined" && window.cloudinary) {
+      window.cloudinary
         .createUploadWidget(
           {
             cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -110,7 +120,7 @@ const EventForm = ({ initialData, type }: EventFormProps) => {
               },
             },
           },
-          (error: any, result: any) => {
+          (error, result) => {
             if (!error && result?.event === "success")
               setImageUrl(result.info.secure_url);
           }
@@ -302,7 +312,7 @@ const EventForm = ({ initialData, type }: EventFormProps) => {
                 <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-0.5 h-10 bg-sky-500 rounded-full opacity-0 group-focus-within:opacity-100 transition-all" />
                 <input
                   name={`title_${activeTab}`}
-                  value={(formState as any)[`title_${activeTab}`]}
+                  value={formState[`title_${activeTab}` as keyof FormState] as string}
                   onChange={handleInputChange}
                   required={activeTab === "en"}
                   placeholder={
@@ -325,7 +335,7 @@ const EventForm = ({ initialData, type }: EventFormProps) => {
                 </label>
                 <textarea
                   name={`desc_${activeTab}`}
-                  value={(formState as any)[`desc_${activeTab}`]}
+                  value={formState[`desc_${activeTab}` as keyof FormState] as string}
                   onChange={handleInputChange}
                   required={activeTab === "en"}
                   rows={3}
@@ -343,7 +353,7 @@ const EventForm = ({ initialData, type }: EventFormProps) => {
                 </label>
                 <textarea
                   name={`overview_${activeTab}`}
-                  value={(formState as any)[`overview_${activeTab}`]}
+                  value={formState[`overview_${activeTab}` as keyof FormState] as string}
                   onChange={handleInputChange}
                   required={activeTab === "en"}
                   rows={8}

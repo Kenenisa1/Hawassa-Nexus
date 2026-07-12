@@ -8,14 +8,19 @@
  */
 
 import { revalidatePath } from 'next/cache';
+import { createSystemLog } from '@/lib/actions/log.actions';
 import connectToDatabase from "../mongodb";
-import Event, { IEvent } from '@/database/event.model';
+import Event, { IEvent as IEventDoc } from '@/database/event.model';
+import type { IEvent } from '@/types';
 
 interface ActionResponse<T = unknown> {
     success: boolean;
     message: string;
-    data?: T; 
+    data?: T;
 }
+
+// Re-export IEventDoc for use in internal operations
+// (IEvent from @/types is the plain serializable frontend type)
 
 /**
  * CREATE: Publish a new pulse to the system.
@@ -151,8 +156,15 @@ export async function getSimilarEventsBySlug(slug: string): Promise<IEvent[]> {
 export async function deleteEvent(id: string): Promise<ActionResponse<string>> {
     try {
         await connectToDatabase();
-        await Event.findByIdAndDelete(id);
+        const event = await Event.findByIdAndDelete(id);
         
+        // Log this destructive action
+        await createSystemLog({
+          action: "Event Deleted",
+          description: `Event "${event?.title?.en ?? id}" was permanently deleted.`,
+          type: "warning",
+        });
+
         revalidatePath('/admin');
         return { success: true, message: "Pulse erased successfully.", data: id };
     } catch (error: unknown) {
@@ -168,11 +180,11 @@ export async function updateEvent(id: string, formData: FormData): Promise<Actio
     try {
         await connectToDatabase();
 
-        const category = formData.get('category') as IEvent['category'];
-        const mode = formData.get('mode') as IEvent['mode'];
+        const category = formData.get('category') as IEventDoc['category'];
+        const mode = formData.get('mode') as IEventDoc['mode'];
         const s = (k: string) => (formData.get(k) as string)?.trim() || "";
 
-        const updateData: Partial<IEvent> = {
+        const updateData: Partial<IEventDoc> = {
             title: {
                 en: s('title_en'),
                 am: s('title_am'),

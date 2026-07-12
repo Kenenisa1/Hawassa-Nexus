@@ -14,7 +14,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       headers: {
         cookie: cookieHeader,
       },
-    } as any,
+    } as unknown as import("next/server").NextRequest,
     secret: process.env.AUTH_SECRET,
   });
 
@@ -22,7 +22,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/login");
   }
 
-  if ((token as any)?.role !== "admin") {
+  if ((token as { role?: string })?.role !== "admin") {
     redirect("/");
   }
 

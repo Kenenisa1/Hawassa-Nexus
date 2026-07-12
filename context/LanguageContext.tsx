@@ -6,7 +6,7 @@ type Language = "en" | "am" | "si";
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (obj: any) => string; // Helper to translate objects
+  t: (obj: Record<string, string> | string | undefined | null) => string; // Helper to translate objects
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -21,8 +21,10 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY) as Language | null;
     if (saved && ["en", "am", "si"].includes(saved)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLanguageState(saved);
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -32,7 +34,7 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
   };
 
   // Helper function to extract the correct string from multilingual objects
-  const t = (obj: any) => {
+  const t = (obj: Record<string, string> | string | undefined | null) => {
     if (!obj) return "";
     if (typeof obj === "string") return obj;
     return obj[language] || obj["en"] || "";

@@ -4,6 +4,10 @@ import Event from './event.model';
 export interface IBooking extends Document {
   eventId: Types.ObjectId;
   email: string;
+  ticketsCount: number;
+  totalAmount: number;
+  paymentStatus: "free" | "pending" | "verified" | "failed";
+  txReference?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,6 +21,14 @@ const bookingSchema = new Schema<IBooking>(
       match: [/^\S+@\S+\.\S+$/, 'Invalid email'],
       lowercase: true 
     },
+    ticketsCount: { type: Number, required: true, default: 1 },
+    totalAmount: { type: Number, required: true, default: 0 },
+    paymentStatus: {
+      type: String,
+      enum: ["free", "pending", "verified", "failed"],
+      default: "free"
+    },
+    txReference: { type: String }
   },
   { timestamps: true }
 );

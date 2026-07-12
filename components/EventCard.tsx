@@ -42,8 +42,8 @@ const EventCard = ({
   const isToday = new Date(date).toDateString() === new Date().toDateString();
 
   // Safe fallback for image alt tags and non-JSX attributes
-  const getPlainString = (field: any) => {
-    if (typeof field === "object") return field.en || "";
+  const getPlainString = (field: string | { en: string; am?: string; si?: string } | undefined | null) => {
+    if (typeof field === "object" && field !== null) return field.en || "";
     return field || "";
   };
 

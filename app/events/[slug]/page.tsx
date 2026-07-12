@@ -22,7 +22,7 @@ import LText from "@/components/LanguageFriendlyText";
 import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/database/user.model";
-import { IEvent } from "@/database/event.model";
+import { IEvent } from "@/types";
 import { cookies } from "next/headers"; // Used to get your custom session/user ID
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
@@ -79,7 +79,8 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>;
     hasSaved = mongoUser?.saved?.includes(event._id);
   }
 
-  const sS = (field: any) => typeof field === 'object' ? field.en : (field || "");
+  const sS = (field: { en: string; am?: string; si?: string } | string | null | undefined) =>
+    typeof field === 'object' && field !== null ? (field.en || "") : (field || "");
   const mapTarget = event.location || event.venue || "Hawassa, Ethiopia";
   const mapQuery = encodeURIComponent(mapTarget);
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
@@ -229,7 +230,7 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>;
 
               <div className="space-y-6">
                 {/* Standardized BookEvent */}
-                <BookEvent eventId={event._id.toString()} slug={event.slug} />
+                <BookEvent eventId={event._id.toString()} slug={event.slug} price={event.price ?? 0} />
 
                 <div className="mt-8 rounded-[2.5rem] overflow-hidden border border-white/10 bg-white/5 shadow-xl shadow-sky-500/5">
                   <a
